@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research - ZPDA</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+/* ===== MODERN NAVBAR WITH HOVER UNDERLINE ===== */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(15, 52, 96, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.logo { color: #fff; font-size: 1.4em; font-weight: bold; letter-spacing: 1px; }
+.nav-bar { display: flex; align-items: center; gap: 18px; }
+.nav-bar a { 
+  color: #e0e0e0; 
+  text-decoration: none; 
+  font-size: 0.95em; 
+  position: relative; 
+  padding: 5px 0; 
+  transition: color 0.3s; 
+}
+.nav-bar a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background: #38bdf8;
+  left: 0;
+  bottom: -3px;
+  transition: width 0.3s;
+}
+.nav-bar a:hover::after { width: 100%; }
+.nav-bar a:hover { color: #ffffff; }
+.auth-area { margin-left: 15px; }
+
+/* ===== BODY ===== */
+body { font-family:'Segoe UI',sans-serif; margin:0; background:#0f172a; color:white; }
+.container { max-width:1000px; margin:30px auto; padding:0 15px; }
+
+/* ✅ FIXED H2 COLOR */
+h2 { 
+  text-align:center; 
+  margin-bottom:20px; 
+  color:#ffffff; 
+  font-size:1.8em; 
+}
+
+/* ===== SEARCH ===== */
+.filter input {
+  width:100%; max-width:400px; padding:10px 15px; border-radius:8px; border:none;
+  margin-bottom:20px; background:#1e293b; color:white; font-size:0.9em;
+}
+
+/* ===== GRID ===== */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:18px;
+}
+
+/* ===== CARD ===== */
+.card {
+  background:#1e293b;
+  padding:18px;
+  border-radius:12px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display:flex;
+  flex-direction:column;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+}
+.card h3 { color:#facc15; margin:0 0 6px 0; font-size:1.1em; }
+.card p { margin:4px 0; color:white; font-size:13px; }
+
+/* ===== ABSTRACT ===== */
+.abstract {
+  position: relative;
+  white-space: pre-wrap;
+  max-height:80px;
+  overflow:hidden;
+  line-height:1.4;
+  margin:8px 0;
+  font-size:13px;
+  background:#111f36;
+  padding:8px;
+  border-radius:6px;
+  text-align: left;
+  transition: max-height 0.3s ease;
+}
+.abstract.expanded { text-align: justify; max-height:none; }
+.abstract::after {
+  content:"";
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height:20px;
+  background: linear-gradient(180deg, transparent, #111f36);
+  border-radius:0 0 6px 6px;
+}
+
+/* ===== READ MORE ===== */
+.read-more {
+  color:#38bdf8;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:bold;
+  margin-bottom:4px;
+  display:inline-block;
+}
+
+/* ===== ACTIONS ===== */
+.actions {
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.btn-download {
+  background:#38bdf8; color:#000; padding:6px 12px; border-radius:6px;
+  text-decoration:none; font-weight:bold; font-size:12px;
+}
+.btn-download:hover { 
+  background:#0ea5e9; color:white; transform: scale(1.05); 
+}
+.icon-btn {
+  background:none; border:none; cursor:pointer; font-size:16px; color:white;
+  display:flex; align-items:center; gap:4px;
+}
+.icon-btn:hover { transform:scale(1.2); color:#38bdf8; }
+
+/* ===== META ===== */
+.metadata { font-size:11px; color:#94a3b8; margin-top:6px; }
+
+/* =========================
+   MOBILE FIX (MATCH INDEX STYLE)
+========================= */
+@media (max-width: 768px) {
+
+  /* NAVBAR */
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .nav-bar a {
+    font-size: 0.9em;
+  }
+
+  /* TITLE */
+  h2 {
+    font-size: 1.4em;
+    text-align: center;
+  }
+
+  /* SEARCH */
+  .filter input {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* GRID → SINGLE COLUMN (IMPORTANT FIX) */
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  /* CARDS */
+  .card {
+    padding: 15px;
+  }
+
+  .card h3 {
+    font-size: 1em;
+  }
+
+  .card p {
+    font-size: 12px;
+  }
+
+  /* ABSTRACT */
+  .abstract {
+    font-size: 12px;
+  }
+
+  /* BUTTONS */
+  .btn-download {
+    width: 100%;
+    text-align: center;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+  <h1 class="logo">Zimbabwean Poetry Digital Archive</h1>
+  <nav class="nav-bar">
+    <a href="index.html">Home</a>
+    <a href="archive.html">Archive</a>
+    <a href="explore.html">Explore</a>
+    <a href="data.html">Data</a>
+    <a href="research.html">Research</a>
+    <a href="teaching.html">Teaching</a>
+    <a href="submit.html">Submit</a>
+    <a href="about.html">About</a>
+    <div id="auth-container" class="auth-area"></div>
+  </nav>
+</header>
+
+<section class="container">
+  <h2>Research Papers</h2>
+
+  <div class="filter">
+    <input type="text" id="searchInput" placeholder="Search by title, author, or keyword...">
+  </div>
+
+  <div class="grid" id="researchGrid"></div>
+</section>
+
+<footer style="text-align:center; padding:15px; color:#94a3b8;">
+  <p>The Zimbabwean Poetry Digital Archive is an open-access Digital Humanities platform supporting the study and preservation of Zimbabwean poetry.</p>
+</footer>
+
+<script>
+
+const authContainer = document.getElementById("auth-container");
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(user){
+  authContainer.innerHTML = `<a href="dashboard.html" class="hero-btn">Dashboard</a>`;
+} else {
+  authContainer.innerHTML = `<button id="dashboard-btn" class="hero-btn">Dashboard</button>`;
+  document.getElementById("dashboard-btn").addEventListener("click",()=>window.location.href="login.html");
+}
+
+const grid = document.getElementById("researchGrid");
+let allPapers = [];
+
+async function fetchResearch(){
+  try {
+    const token = localStorage.getItem("adminToken") || localStorage.getItem("userToken");
+    const res = await fetch("https://zpda-backend-1.onrender.com/research-papers", {
+      headers: token ? { "Authorization": "Bearer "+token } : {}
+    });
+
+    const papers = await res.json();
+
+    papers.forEach(p=>{
+      if(!p.fileUrl.startsWith("http")){
+        p.fileUrl = "https://zpda-backend-1.onrender.com/" + p.fileUrl;
+      }
+    });
+
+    allPapers = papers;
+    renderPapers(papers);
+
+  } catch(err){
+    console.error(err);
+    grid.innerHTML = "<p style='color:#f87171;text-align:center;'>Failed to load research papers</p>";
+  }
+}
+
+function renderPapers(papers){
+  grid.innerHTML = "";
+
+  papers.forEach(p=>{
+    const div = document.createElement("div");
+
+    div.className = "card";
+
+    // ✅ DYNAMIC RESEARCH PAGE LINK
+    const researchLink = window.location.href;
+
+    const shareText =
+`📄 ${p.title}
+👤 ${p.authors}
+📅 ${p.year}
+
+Read full paper:
+${p.fileUrl}
+
+Explore more research on ZPDA:
+${researchLink}`;
+
+    div.innerHTML = `
+      <h3>${p.title}</h3>
+      <p><strong>Authors:</strong> ${p.authors}</p>
+      <p><strong>Year:</strong> ${p.year}</p>
+
+      <div class="abstract">${p.abstract}</div>
+      <span class="read-more">Read more</span>
+
+      <p><strong>Keywords:</strong> ${p.keywords.join(", ")}</p>
+
+      <div class="actions">
+        <a href="${p.fileUrl}" target="_blank" class="btn-download">View / Download PDF</a>
+        <button class="icon-btn share" title="Share"><i class="fa-solid fa-share"></i></button>
+      </div>
+    `;
+
+    div.querySelector(".read-more").onclick = ()=>{
+      const abs = div.querySelector(".abstract");
+      abs.classList.toggle("expanded");
+    };
+
+    div.querySelector(".share").onclick = ()=>{
+      if(navigator.share){
+        navigator.share({
+          title: p.title,
+          text: shareText
+        });
+      } else {
+        navigator.clipboard.writeText(shareText);
+        alert("Copied!");
+      }
+    };
+
+    grid.appendChild(div);
+  });
+}
+
+fetchResearch();
+
+document.getElementById("searchInput").addEventListener("input",e=>{
+  const term = e.target.value.toLowerCase();
+  const filtered = allPapers.filter(p =>
+    p.title.toLowerCase().includes(term) ||
+    p.authors.toLowerCase().includes(term) ||
+    p.keywords.some(k => k.toLowerCase().includes(term))
+  );
+  renderPapers(filtered);
+});
+
+</script>
+
+</body>
+</html>

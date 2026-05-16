@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explore - ZPDA</title>
+<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+
+/* ===== NAVBAR ===== */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(15, 52, 96, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+}
+
+.logo {
+  color: #fff;
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+.nav-bar {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.nav-bar a {
+  color: #e0e0e0;
+  text-decoration: none;
+  position: relative;
+  padding: 5px 0;
+}
+
+.nav-bar a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background: #5c9ded;
+  left: 0;
+  bottom: -3px;
+  transition: width 0.3s;
+}
+
+.nav-bar a:hover::after {
+  width: 100%;
+}
+
+body {
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:#0f172a;
+  color:white;
+}
+
+section.container {
+  padding: 20px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* ===== GRID ===== */
+.grid {
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+  margin-top:20px;
+  justify-content:center;
+}
+
+/* ===== THEME CARD ===== */
+.card {
+  color:white;
+  padding:18px 20px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:bold;
+  transition:0.3s;
+  flex:1 1 calc(40% - 15px);
+  text-align:center;
+  position:relative;
+}
+
+.card:hover {
+  transform:scale(1.08);
+}
+
+/* ICON GLOW */
+@keyframes glowPulse {
+  0% { text-shadow:0 0 5px rgba(255,255,255,0.2); transform:scale(1); }
+  50% { text-shadow:0 0 18px rgba(255,255,255,0.9); transform:scale(1.15); }
+  100% { text-shadow:0 0 5px rgba(255,255,255,0.2); transform:scale(1); }
+}
+
+.card i {
+  animation: glowPulse 2.2s infinite ease-in-out;
+}
+
+/* ===== POEM LIST ANIMATION ===== */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.poem-item {
+  background:#1e293b;
+  padding:10px 15px;
+  margin-bottom:10px;
+  border-radius:8px;
+  cursor:pointer;
+  animation: fadeUp 0.4s ease;
+}
+
+.poem-title {
+  font-weight:bold;
+  color:#facc15;
+}
+
+.poem-meta {
+  font-size:12px;
+  color:#38bdf8;
+}
+
+/* EMPTY */
+.empty-state {
+  text-align:center;
+  padding:20px;
+  color:#94a3b8;
+}
+
+/* DASHBOARD */
+.hero-btn {
+  background:#38bdf8;
+  color:#000;
+  padding:6px 12px;
+  border-radius:6px;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+/* ===== MOBILE FIX ONLY ===== */
+@media (max-width: 768px) {
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-bar a {
+    font-size: 0.9em;
+  }
+
+  .hero-about {
+    padding: 60px 15px;
+  }
+
+  .hero-about h1 {
+    font-size: 26px;
+  }
+
+  .hero-about p {
+    font-size: 15px;
+  }
+
+  .container {
+    margin: 20px auto;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+  <h1 class="logo">Zimbabwean Poetry Digital Archive</h1>
+
+  <nav class="nav-bar">
+    <a href="index.html">Home</a>
+    <a href="archive.html">Archive</a>
+    <a href="explore.html">Explore</a>
+    <a href="data.html">Data</a>
+    <a href="research.html">Research</a>
+    <a href="teaching.html">Teaching</a>
+    <a href="submit.html">Submit</a>
+    <a href="about.html">About</a>
+    <div id="auth-container"></div>
+  </nav>
+</header>
+
+<section class="container">
+
+<h2>Explore Themes</h2>
+
+<div class="grid" id="themesContainer"></div>
+
+<!-- SCROLL TARGET -->
+<div id="poemList"></div>
+
+</section>
+
+<script>
+
+let poems = [];
+let currentTheme = "";
+
+/* ===== ICON MAP ===== */
+const themeData = {
+  "Love": { icon:"fa-heart", color:"#f43f5e" },
+  "Politics": { icon:"fa-landmark", color:"#facc15" },
+  "Culture": { icon:"fa-globe-africa", color:"#10b981" },
+  "Spiritual": { icon:"fa-hands-praying", color:"#a855f7" },
+  "Social Commentary": { icon:"fa-comments", color:"#3b82f6" },
+  "Satire": { icon:"fa-face-laugh-squint", color:"#f97316" },
+  "War / Liberation": { icon:"fa-person-rifle", color:"#ef4444" },
+  "Nature": { icon:"fa-leaf", color:"#22c55e" },
+  "Urban": { icon:"fa-city", color:"#60a5fa" },
+  "Spoken Word": { icon:"fa-microphone", color:"#eab308" },
+  "Praise Poetry": { icon:"fa-crown", color:"#fbbf24" },
+  "Elegy": { icon:"fa-cross", color:"#64748b" },
+  "Protest Poetry": { icon:"fa-hand-fist", color:"#dc2626" },
+  "Didactic": { icon:"fa-book-open", color:"#14b8a6" },
+  "Narrative": { icon:"fa-scroll", color:"#8b5cf6" }
+};
+
+/* ===== FETCH ===== */
+async function fetchPoems(){
+  const res = await fetch("https://zpda-backend-1.onrender.com/poems");
+  poems = await res.json();
+  displayThemes();
+}
+
+/* ===== THEMES ===== */
+function displayThemes(){
+
+  const container = document.getElementById("themesContainer");
+
+  container.innerHTML = Object.keys(themeData).map(t=>{
+    const count = poems.filter(p =>
+      (p.genre || "").toLowerCase().trim() === t.toLowerCase().trim()
+    ).length;
+
+    const style = themeData[t];
+
+    return `
+      <div class="card" style="background:${style.color}">
+        <i class="fa-solid ${style.icon}"></i>
+        <div>${t} (${count})</div>
+      </div>
+    `;
+  }).join("");
+
+  document.querySelectorAll(".card").forEach(card=>{
+    card.onclick = ()=>{
+      currentTheme = card.textContent.split(" (")[0].trim();
+
+      displayPoems(currentTheme);
+
+      // ===== SMOOTH SCROLL TO RESULTS =====
+      document.getElementById("poemList")
+        .scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+  });
+}
+
+/* ===== DISPLAY POEMS ===== */
+function displayPoems(theme){
+
+  let filtered = poems.filter(p =>
+    (p.genre || "").toLowerCase().trim() === theme.toLowerCase().trim()
+  );
+
+  const list = document.getElementById("poemList");
+
+  if(filtered.length === 0){
+    list.innerHTML = `<div class="empty-state">No poems found in <b>${theme}</b></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(p=>`
+    <div class="poem-item">
+      <div class="poem-title">${p.title}</div>
+      <div class="poem-meta">✍ ${p.author || "Unknown Poet"}</div>
+    </div>
+  `).join("");
+}
+
+/* ===== DASHBOARD BUTTON ===== */
+const auth = document.getElementById("auth-container");
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(user){
+  auth.innerHTML = `<a href="dashboard.html" class="hero-btn">Dashboard</a>`;
+}else{
+  auth.innerHTML = `<button id="dashBtn" class="hero-btn">Dashboard</button>`;
+  document.getElementById("dashBtn").onclick = ()=>{
+    window.location.href="login.html";
+  };
+}
+
+/* INIT */
+fetchPoems();
+
+</script>
+
+</body>
+</html>

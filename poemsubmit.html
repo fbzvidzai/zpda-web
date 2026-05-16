@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit Poem - ZPDA</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+/* ===== NAVBAR (RESTORED EXPLORE STYLE FUNCTIONALITY) ===== */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(15, 52, 96, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.logo { color:#fff; font-size:1.4em; font-weight:bold; }
+
+.nav-bar {
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+/* ✅ RESTORED UNDERLINE ANIMATION */
+.nav-bar a {
+  color:#e0e0e0;
+  text-decoration:none;
+  font-size:0.95em;
+  position: relative;
+  padding: 5px 0;
+  transition: color 0.3s;
+}
+
+.nav-bar a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background: #5c9ded;
+  left: 0;
+  bottom: -3px;
+  transition: width 0.3s;
+}
+
+.nav-bar a:hover {
+  color: #ffffff;
+}
+
+.nav-bar a:hover::after {
+  width: 100%;
+}
+
+.auth-area { margin-left:15px; }
+
+.hero-btn {
+  background:#38bdf8;
+  color:#000;
+  font-weight:bold;
+  padding:12px 28px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  text-decoration:none;
+}
+
+/* ===== BODY ===== */
+body {
+  font-family:'Segoe UI',sans-serif;
+  margin:0;
+  background:#0f172a;
+  color:white;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width:700px;
+  margin:40px auto;
+  padding:0 15px;
+}
+
+h2 { text-align:center; }
+
+/* ===== FORM ===== */
+form {
+  background:#1e293b;
+  padding:25px;
+  border-radius:16px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+form label { color:#facc15; font-weight:bold; }
+
+form input, form textarea, form select {
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#0f172a;
+  color:white;
+}
+
+form textarea { min-height:150px; }
+
+form button {
+  background:#38bdf8;
+  padding:12px;
+  border:none;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:10px;
+}
+
+/* ===== PREVIEW ===== */
+#previewCard {
+  background:#1e293b;
+  margin-top:20px;
+  padding:20px;
+  border-radius:16px;
+  display:none;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background:#1e293b;
+  padding:25px;
+  text-align:center;
+  margin-top:40px;
+}
+
+/* ===== MOBILE FIX ONLY ===== */
+@media (max-width: 768px) {
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-bar a {
+    font-size: 0.9em;
+  }
+
+  .hero-about {
+    padding: 60px 15px;
+  }
+
+  .hero-about h1 {
+    font-size: 26px;
+  }
+
+  .hero-about p {
+    font-size: 15px;
+  }
+
+  .container {
+    margin: 20px auto;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+  <h1 class="logo">Zimbabwean Poetry Digital Archive</h1>
+
+  <nav class="nav-bar">
+    <a href="index.html">Home</a>
+    <a href="archive.html">Archive</a>
+    <a href="explore.html">Explore</a>
+    <a href="data.html">Data</a>
+    <a href="research.html">Research</a>
+    <a href="teaching.html">Teaching</a>
+    <a href="submit.html">Submit</a>
+    <a href="about.html">About</a>
+
+    <div id="auth-container" class="auth-area"></div>
+  </nav>
+</header>
+
+<section class="container">
+
+<h2>Submit Your Poem</h2>
+
+<form id="poemForm">
+
+  <label>Poem Title</label>
+  <input type="text" id="title" required>
+
+  <label>Author</label>
+  <input type="text" id="author" required>
+
+  <!-- DATE -->
+  <input type="hidden" id="date">
+
+  <label>Language</label>
+  <select id="language" required>
+    <option value="">Select language</option>
+    <option>Chewa</option>
+    <option>Chibarwe</option>
+    <option>Kalanga</option>
+    <option>Koisan</option>
+    <option>Nambya</option>
+    <option>Ndau</option>
+    <option>Ndebele</option>
+    <option>Shona</option>
+    <option>Sign Language</option>
+    <option>Sotho</option>
+    <option>Tonga</option>
+    <option>Tswana</option>
+    <option>Venda</option>
+    <option>Xhosa</option>
+    <option>English</option>
+  </select>
+
+  <label>Genre</label>
+  <select id="genre" required>
+    <option value="">Select genre</option>
+    <option>Love</option>
+    <option>Politics</option>
+    <option>Culture</option>
+    <option>Spiritual</option>
+    <option>Social Commentary</option>
+    <option>Satire</option>
+    <option>War / Liberation</option>
+    <option>Nature</option>
+    <option>Urban</option>
+    <option>Spoken Word</option>
+    <option>Praise Poetry</option>
+    <option>Elegy</option>
+    <option>Protest Poetry</option>
+    <option>Didactic</option>
+    <option>Narrative</option>
+  </select>
+
+  <!-- PERIOD ADDED (AS REQUESTED) -->
+  <label>Period</label>
+  <select id="period" required>
+    <option value="">Select period</option>
+    <option>Precolonial/Cultural</option>
+    <option>Colonial</option>
+    <option>Liberation (Chimurenga)</option>
+    <option>Post Colonial</option>
+    <option>Contemporary</option>
+<option>Digital Age</option>
+  </select>
+
+  <label>Poem Text</label>
+  <textarea id="text" required></textarea>
+
+  <button type="submit">Submit Poem</button>
+</form>
+
+<div id="previewCard">
+  <h3 id="previewTitle"></h3>
+  <p><strong>Author:</strong> <span id="previewAuthor"></span></p>
+  <p><strong>Language:</strong> <span id="previewLanguage"></span></p>
+  <p><strong>Genre:</strong> <span id="previewGenre"></span></p>
+  <p><strong>Period:</strong> <span id="previewDate"></span></p>
+  <div id="previewText"></div>
+</div>
+
+</section>
+
+<footer>
+  <p>© 2026 Zimbabwean Poetry Digital Archive</p>
+</footer>
+
+<script>
+
+// ===== DASHBOARD BUTTON (UNCHANGED FUNCTIONALITY) =====
+const authContainer = document.getElementById("auth-container");
+const currentUser = JSON.parse(localStorage.getItem("user"));
+const authorInput = document.getElementById("author");
+
+if(currentUser){
+  authContainer.innerHTML = `<a href="dashboard.html" class="hero-btn">Dashboard</a>`;
+  authorInput.value = currentUser.username || currentUser.name;
+  authorInput.readOnly = true;
+} else {
+  authContainer.innerHTML = `<button class="hero-btn" onclick="window.location.href='login.html'">Dashboard</button>`;
+}
+
+// AUTO DATE
+const today = new Date();
+document.getElementById("date").value = today.toISOString().split("T")[0];
+
+// SUBMIT
+const form = document.getElementById("poemForm");
+const preview = document.getElementById("previewCard");
+
+form.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+
+  const poem = {
+    title: document.getElementById("title").value,
+    author: document.getElementById("author").value,
+    language: document.getElementById("language").value,
+    genre: document.getElementById("genre").value,
+    period: document.getElementById("period").value,
+    text: document.getElementById("text").value,
+    date: document.getElementById("date").value
+  };
+
+  const token = localStorage.getItem("zpdaToken");
+
+  try {
+    const res = await fetch("https://zpda-backend-1.onrender.com/poems", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify(poem)
+    });
+
+    const data = await res.json();
+
+    if(res.ok){
+
+      document.getElementById("previewTitle").innerText = poem.title;
+      document.getElementById("previewAuthor").innerText = poem.author;
+      document.getElementById("previewLanguage").innerText = poem.language;
+      document.getElementById("previewGenre").innerText = poem.genre;
+      document.getElementById("previewDate").innerText = poem.period;
+      document.getElementById("previewText").innerText = poem.text;
+
+      preview.style.display = "block";
+      form.reset();
+
+      if(currentUser){
+        authorInput.value = currentUser.username || currentUser.name;
+      }
+
+      alert("Poem submitted successfully!");
+    } else {
+      alert(data.error || "Failed to submit poem");
+    }
+
+  } catch(err){
+    console.error(err);
+    alert("Server error. Check backend.");
+  }
+});
+
+</script>
+
+</body>
+</html>

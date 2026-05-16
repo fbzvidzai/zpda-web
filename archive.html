@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archive - ZPDA</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+/* ===== NAVBAR (UNDERLINE EFFECT) ===== */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(15, 52, 96, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.logo { color: #fff; font-size: 1.4em; font-weight: bold; letter-spacing: 1px; }
+.nav-bar { display: flex; align-items: center; gap: 18px; }
+.nav-bar a { color: #e0e0e0; text-decoration: none; font-size: 0.95em; position: relative; padding: 5px 0; transition: color 0.3s; }
+.nav-bar a::after { content: ""; position: absolute; width: 0%; height: 2px; background: #5c9ded; left: 0; bottom: -3px; transition: width 0.3s; }
+.nav-bar a:hover { color: #ffffff; }
+.nav-bar a:hover::after { width: 100%; }
+
+/* ===== BODY ===== */
+body {
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:#0f172a;
+  color:white;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width:1100px;
+  margin:30px auto;
+  padding:0 15px;
+}
+
+/* ===== FILTERS ===== */
+input, select {
+  padding:10px;
+  margin:5px;
+  border-radius:8px;
+  border:none;
+  background:#1e293b;
+  color:white;
+}
+
+/* ===== GRID ===== */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;
+  margin-top:20px;
+}
+
+/* ===== CARD ===== */
+.card {
+  background:#1e293b;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+  transition:0.3s;
+}
+.card:hover { transform:translateY(-5px); }
+.card h3 { color:#facc15; }
+
+/* ===== POEM TEXT ===== */
+.poem-text {
+  white-space: pre-wrap;
+  line-height:1.6;
+  color:#e2e8f0;
+  margin-top:10px;
+}
+
+/* ===== ACTIONS ===== */
+.actions {
+  display:flex;
+  gap:12px;
+  margin-top:12px;
+}
+.icon-btn {
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-size:18px;
+  color:white;
+  transition:0.2s;
+}
+.icon-btn:hover { transform:scale(1.2); }
+.liked { color:#f43f5e; }
+
+/* ===== META ===== */
+.metadata {
+  font-size:12px;
+  color:#94a3b8;
+  margin-top:10px;
+}
+
+/* ===== POET TAG ===== */
+.poet-tag {
+  margin-top:8px;
+  display:inline-block;
+  padding:6px 12px;
+  font-size:12px;
+  font-weight:600;
+  color:#0f172a;
+  background:linear-gradient(135deg,#facc15,#fbbf24);
+  border-radius:20px;
+}
+
+/* ===== HIGHLIGHT ONLY ===== */
+.highlight-poem {
+  border: 2px solid #facc15 !important;
+  box-shadow: 0 0 20px rgba(250,204,21,0.8) !important;
+  transform: scale(1.02);
+  transition: 0.4s ease;
+}
+
+/* ===== READ MORE STYLE (INLINE ONLY) ===== */
+.read-more {
+  color:#38bdf8;
+  cursor:pointer;
+  font-weight:bold;
+  margin-left:6px;
+  display:inline;
+}
+
+/* ===== MOBILE FIX ONLY ===== */
+@media (max-width: 768px) {
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-bar a {
+    font-size: 0.9em;
+  }
+
+  .hero-about {
+    padding: 60px 15px;
+  }
+
+  .hero-about h1 {
+    font-size: 26px;
+  }
+
+  .hero-about p {
+    font-size: 15px;
+  }
+
+  .container {
+    margin: 20px auto;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+  <h1 class="logo">Zimbabwean Poetry Digital Archive</h1>
+  <nav class="nav-bar">
+    <a href="index.html">Home</a>
+    <a href="archive.html">Archive</a>
+    <a href="explore.html">Explore</a>
+    <a href="data.html">Data</a>
+    <a href="research.html">Research</a>
+    <a href="teaching.html">Teaching</a>
+    <a href="submit.html">Submit</a>
+    <a href="about.html">About</a>
+    <div id="auth-container"></div>
+  </nav>
+</header>
+
+<section class="container">
+
+<h2>Search Archive</h2>
+
+<input type="text" id="search" placeholder="Search poems...">
+
+<select id="language">
+<option value="">Language</option>
+<option>Chewa</option><option>Chibarwe</option><option>Kalanga</option>
+<option>Koisan</option><option>Nambya</option><option>Ndau</option>
+<option>Ndebele</option><option>Shona</option><option>Sign Language</option>
+<option>Sotho</option><option>Tonga</option><option>Tswana</option>
+<option>Venda</option><option>Xhosa</option><option>English</option>
+</select>
+
+<select id="genre">
+<option value="">Genre</option>
+<option>Love</option><option>Politics</option><option>Culture</option>
+<option>Spiritual</option><option>Social Commentary</option><option>Satire</option>
+<option>War / Liberation</option><option>Nature</option><option>Urban</option>
+<option>Spoken Word</option><option>Praise Poetry</option><option>Elegy</option>
+<option>Protest Poetry</option><option>Didactic</option><option>Narrative</option>
+</select>
+
+<select id="period">
+<option value="">Period</option>
+<option>Precolonial/Cultural</option><option>Colonial</option>
+<option>Liberation (Chimurenga)</option><option>Postcolonial</option>
+<option>Contemporary</option><option>Digital Age</option>
+</select>
+
+<div id="results" class="grid"></div>
+
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+const { jsPDF } = window.jspdf;
+const container = document.getElementById("results");
+
+let poems = [];
+let user = JSON.parse(localStorage.getItem("user"));
+let token = localStorage.getItem("zpdaToken");
+
+// LOAD
+async function load(){
+  const res = await fetch("https://zpda-backend-1.onrender.com/poems");
+  poems = await res.json();
+  display(poems);
+  highlightFromHome();
+
+}
+
+load();
+
+// FILTER
+["search","language","genre","period"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",()=>filter());
+});
+
+function filter(){
+  const keyword = document.getElementById("search").value.toLowerCase();
+  const lang = document.getElementById("language").value;
+  const gen = document.getElementById("genre").value;
+  const per = document.getElementById("period").value;
+
+  const filtered = poems.filter(p =>
+    (p.title?.toLowerCase().includes(keyword) ||
+     p.author?.toLowerCase().includes(keyword) ||
+     p.text?.toLowerCase().includes(keyword)) &&
+    (!lang || p.language === lang) &&
+    (!gen || p.genre === gen) &&
+    (!per || p.period === per)
+  );
+
+  display(filtered);
+}
+
+// DISPLAY (ARCHIVE-ACCURATE + FONT RESTORED)
+function display(list){
+  container.innerHTML = "";
+
+  list.forEach(p => {
+
+    const full = p.text || "";
+    const lines = full.split("\n");
+    const isLong = lines.length > 6;
+    const preview = isLong ? lines.slice(0,6).join("\n") : full;
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.id = p._id;
+
+    const dateAgo = p.createdAt ? new Date(p.createdAt).toDateString() : "";
+    const alreadyLiked = user && p.likedBy?.includes(user._id);
+
+    card.innerHTML = `
+      <h3>${p.title}</h3>
+
+      <p style="cursor:pointer; color:#38bdf8;">
+        <strong>${p.author || "Unknown"}</strong>
+        <span class="poet-tag">Zimbabwean Poet</span>
+      </p>
+
+      <div class="poem-text">
+        <pre class="text-content"></pre>
+        ${isLong ? `<span class="read-more"> Read more</span>` : ""}
+      </div>
+
+      <div class="actions">
+        <button class="icon-btn download"><i class="fa-solid fa-download"></i></button>
+
+        <button class="icon-btn like">
+          <i class="fa-solid fa-heart ${alreadyLiked ? "liked" : ""}"></i>
+          <span>${p.likes || 0}</span>
+        </button>
+
+        <button class="icon-btn share"><i class="fa-solid fa-share"></i></button>
+      </div>
+
+      <p class="metadata">${p.language} | ${p.genre} | ${p.period} | ${dateAgo}</p>
+    `;
+
+    const textEl = card.querySelector(".text-content");
+    const btn = card.querySelector(".read-more");
+
+    // ✅ RESTORE ORIGINAL FONT + SIZE (override <pre>)
+    textEl.style.fontFamily = "'Segoe UI', sans-serif";
+    textEl.style.fontSize = "15px";
+    textEl.style.lineHeight = "1.6";
+    textEl.style.margin = "0"; // removes default pre spacing
+
+    // preserve exact structure
+    textEl.textContent = preview;
+
+    if(btn){
+      let expanded = false;
+
+      btn.onclick = () => {
+        expanded = !expanded;
+
+        textEl.textContent = expanded ? full : preview;
+        btn.textContent = expanded ? " Read less" : " Read more";
+      };
+    }
+
+    // DOWNLOAD
+    card.querySelector(".download").onclick = () => {
+      const doc = new jsPDF();
+      doc.text(
+        `${p.title}\n\nBy ${p.author || "Unknown"}\n\n${full}\n\nPublished by Zimbabwean Poetry Digital Archive`,
+        10, 10
+      );
+      doc.save(`${p.title}.pdf`);
+    };
+
+    // LIKE
+    card.querySelector(".like").onclick = async () => {
+      if(!token){
+        alert("Please login");
+        return;
+      }
+
+      await fetch(`https://zpda-backend-1.onrender.com/poems/${p._id}/like`,{
+        method:"PUT",
+        headers:{ "Authorization":"Bearer "+token }
+      });
+
+      load();
+    };
+
+    // SHARE
+    card.querySelector(".share").onclick = async () => {
+
+      const archiveLink = window.location.href;
+
+      const shareText =
+`${p.title}
+
+By ${p.author || "Unknown"}
+
+${full}
+
+Read more in the Zimbabwean Poetry Digital Archive:
+${archiveLink}`;
+
+      if(navigator.share){
+        navigator.share({
+          title: p.title,
+          text: shareText
+        });
+      } else {
+        navigator.clipboard.writeText(shareText);
+        alert("Copied!");
+      }
+    };
+
+    container.appendChild(card);
+  });
+}
+
+// HIGHLIGHT
+function highlightFromHome(){
+  const id = window.location.hash.replace("#","");
+  if(!id) return;
+
+  setTimeout(()=>{
+    const el = document.getElementById(id);
+    if(el){
+      el.classList.add("highlight-poem");
+
+      setTimeout(()=>{
+        el.classList.remove("highlight-poem");
+      }, 4000);
+    }
+  }, 500);
+}
+
+// AUTH
+const auth = document.getElementById("auth-container");
+
+if(user){
+  auth.innerHTML = `<a href="dashboard.html" class="hero-btn">Dashboard</a>`;
+}else{
+  auth.innerHTML = `<button id="dashBtn" class="hero-btn">Dashboard</button>`;
+  document.getElementById("dashBtn").onclick = ()=>{
+    window.location.href="login.html";
+  };
+}
+
+});
+</script>
+
+</body>
+</html>
