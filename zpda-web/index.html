@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zimbabwean Poetry Digital Archive</title>
+
+<style>
+/* ===== BODY ===== */
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#f4f4f4;
+  color:#162447;
+}
+
+/* ===== NAVBAR WITH HOVER UNDERLINE ONLY ===== */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #162447;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+}
+
+.logo { color:white; font-size:1.4em; font-weight:bold; }
+
+.nav-bar {
+  display:flex;
+  align-items:center;
+  gap:30px; 
+}
+
+.nav-bar a {
+  color:white;
+  text-decoration:none;
+  font-size:0.95em;
+  position: relative;
+  padding:5px 0;
+  transition: color 0.3s;
+}
+
+.nav-bar a::after {
+  content:"";
+  position: absolute;
+  left:0;
+  bottom:-3px;
+  height:2px;
+  width:0%;
+  background:#5c9ded;
+  transition: width 0.3s;
+}
+
+.nav-bar a:hover::after { width:100%; } 
+.nav-bar a:hover { color:#5c9ded; }
+
+/* ===== HERO ===== */
+.hero {
+  background:#162447;
+  color:white;
+  text-align:center;
+  padding:80px 20px;
+}
+
+.hero-btn {
+  background:#5c9ded;
+  color:white;
+  padding:12px 25px;
+  border:none;
+  border-radius:6px;
+  text-decoration:none;
+  font-weight:bold;
+  margin:5px;
+  display:inline-block;
+  transition: transform 0.2s; 
+}
+.hero-btn:hover { 
+  background:#4178c0; 
+  transform: scale(1.05); 
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+}
+
+/* ===== CARDS ===== */
+#poem-list {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  margin-top:20px;
+  min-height:320px;
+}
+
+/* FADE SMOOTH */
+.card {
+  background:white;
+  border-radius:12px;
+  padding:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  opacity:0;
+  transform: translateY(10px);
+  animation: fadeIn 0.7s forwards;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+@keyframes fadeIn {
+  to { opacity:1; transform: translateY(0); }
+}
+
+.card:hover {
+  transform: rotateY(6deg) rotateX(6deg) scale(1.03);
+  box-shadow:0 15px 25px rgba(0,0,0,0.2);
+}
+
+/* ===== POEM ===== */
+.poem-text {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  font-size: 0.95em;
+}
+
+/* ===== BUTTON ===== */
+.view-btn {
+  margin-top:10px;
+  padding:10px 14px;
+  background: linear-gradient(135deg,#5c9ded,#38bdf8);
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  width:100%;
+}
+
+/* ===== SPONSORED ADS ===== */
+.card.sponsored {
+  border: 2px dashed #5c9ded;
+  background: #e0f0ff;
+  text-align: center;
+}
+
+.ad-img {
+  width:100%;
+  margin-top:10px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* ===== MODAL ===== */
+#imgModal {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.9);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:3000;
+}
+
+#imgModal img {
+  max-width:90%;
+  max-height:90%;
+  border-radius:10px;
+}
+
+#imgModal span {
+  position:absolute;
+  top:20px;
+  right:30px;
+  color:white;
+  font-size:30px;
+  cursor:pointer;
+}
+
+/* ===== TAURAAI CHAT ===== */
+#tauraAI-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background:#5c9ded;
+  color:white;
+  border:none;
+  border-radius:50%;
+  width:60px;
+  height:60px;
+  font-size:28px;
+  cursor:pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+#tauraAI-chat {
+  position: fixed;
+  bottom:90px;
+  right:20px;
+  width:320px;
+  max-height:400px;
+  background:white;
+  border-radius:12px;
+  display:none;
+  flex-direction:column;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+  overflow:hidden;
+}
+
+#tauraAI-chat header {
+  background:#5c9ded;
+  color:white;
+  padding:12px;
+  font-weight:bold;
+  text-align:center;
+}
+
+.messages {
+  flex:1;
+  padding:10px;
+  overflow-y:auto;
+  background:#f0f4f8;
+}
+
+.message.user { text-align:right; margin:5px 0; }
+.message.ai { text-align:left; margin:5px 0; color:#5c9ded; }
+
+#tauraAI-input {
+  display:flex;
+  border-top:1px solid #ccc;
+}
+
+#tauraAI-input input {
+  flex:1;
+  padding:8px;
+  border:none;
+}
+
+#tauraAI-input button {
+  background:#5c9ded;
+  color:white;
+  border:none;
+  padding:8px 12px;
+}
+
+/* ===== ADVERTISE ===== */
+#advertise-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background:#ff6b6b;
+  color:white;
+  border:none;
+  border-radius:50%;
+  width:60px;
+  height:60px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background:#162447;
+  color:white;
+  text-align:center;
+  padding:20px;
+  margin-top:40px;
+}
+
+/* =========================
+   MOBILE FIX (IMPROVED)
+========================= */
+@media (max-width: 768px) {
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  #poem-list {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 60px 15px;
+  }
+
+  .hero h2 {
+    font-size: 22px;
+  }
+
+  .hero p {
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  #tauraAI-chat {
+    width: 90%;
+    right: 5%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+  <h1 class="logo">Zimbabwean Poetry Digital Archive</h1>
+  <nav class="nav-bar">
+    <a href="index.html">Home</a>
+    <a href="archive.html">Archive</a>
+    <a href="explore.html">Explore</a>
+    <a href="data.html">Data</a>
+    <a href="research.html">Research</a>
+    <a href="teaching.html">Teaching</a>
+    <a href="submit.html">Submit</a>
+    <a href="about.html">About</a>
+    <div id="auth-container"></div>
+  </nav>
+</header>
+
+<section class="hero">
+  <h2>Voices. Culture. Identity.</h2>
+  <p>A Digital Archive of Zimbabwean Poetry</p>
+  <a href="#poem-list" class="hero-btn">Explore Poems</a>
+  <a href="submit.html" class="hero-btn">Submit Your Poem</a>
+</section>
+
+<section class="container">
+  <h2>Featured Poems & Sponsored</h2>
+  <div id="poem-list"></div>
+</section>
+
+<div id="imgModal">
+  <span onclick="closeImg()">&times;</span>
+  <img id="modalImg">
+</div>
+
+<button id="tauraAI-btn">💬</button>
+
+<div id="tauraAI-chat">
+  <header>Ask TauraAI</header>
+  <div class="messages" id="messages"></div>
+  <div id="tauraAI-input">
+    <input id="input" placeholder="Ask TauraAI...">
+    <button onclick="send()">Send</button>
+  </div>
+</div>
+
+<button id="advertise-btn">Ads</button>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+// =======================
+// LOAD + RENDER FEATURED
+// =======================
+let poemsCache = [];
+let adsCache = [];
+
+async function getPoems(){
+  try {
+    const res = await fetch("https://zpda-backend-1.onrender.com/poems");
+    poemsCache = await res.json();
+  } catch(e){
+    console.log("Poems failed");
+  }
+}
+
+async function getAds(){
+  try {
+    const res = await fetch("https://zpda-backend-1.onrender.com/ads");
+    adsCache = await res.json();
+  } catch(e){
+    console.log("Ads failed");
+  }
+}
+
+// =======================
+// HELPERS
+// =======================
+function previewPoem(text){
+  const lines = text.split("\n").filter(l => l.trim() !== "");
+  return lines.slice(0,4).join("\n") + (lines.length > 4 ? "\n..." : "");
+}
+
+function shuffle(arr){
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+// =======================
+// 🔥 VIEW IN ARCHIVE (ADDED)
+// =======================
+window.viewPoem = function(id){
+  window.location.href = "archive.html#" + id;
+}
+
+// =======================
+// 🔥 RENDER FEATURED (FIXED)
+// =======================
+function renderFeatured(){
+
+  const container = document.getElementById("poem-list");
+  if(!container) return;
+
+  container.innerHTML = "";
+
+  const poems = shuffle(poemsCache).slice(0,3);
+  const ads = shuffle(adsCache).slice(0,1);
+
+  let items = [...poems];
+
+  // insert ad randomly
+  if(ads.length){
+    const pos = Math.floor(Math.random() * items.length);
+    items.splice(pos, 0, { ad: true, data: ads[0] });
+  }
+
+  // limit to 3 cards total
+  items = items.slice(0,3);
+
+  items.forEach(item => {
+
+    const div = document.createElement("div");
+
+    // =======================
+    // POEM CARD
+    // =======================
+    if(!item.ad){
+      div.className = "card";
+      div.innerHTML = `
+        <h3>${item.title}</h3>
+        <p><b>${item.author || "Unknown"}</b></p>
+        <div class="poem-text">${previewPoem(item.text)}</div>
+        <button class="view-btn" onclick="viewPoem('${item._id}')">
+          Read Full Poem
+        </button>
+      `;
+    }
+
+    // =======================
+    // 🔥 AD CARD (RESTORED WITH IMAGE CLICK)
+    // =======================
+    else {
+      div.className = "card sponsored";
+
+      div.innerHTML = `
+        <h3>📢 Sponsored</h3>
+        <div class="poem-text">${item.data.text || ""}</div>
+
+        ${item.data.image ? `
+          <img src="${item.data.image}" class="ad-img"
+               onclick="openImg('${item.data.image}')">
+        ` : ""}
+      `;
+    }
+
+    container.appendChild(div);
+  });
+}
+
+// =======================
+// ADS BUTTON REDIRECT
+// =======================
+const adsBtn = document.getElementById("advertise-btn");
+
+if (adsBtn) {
+  adsBtn.onclick = () => {
+    // optional message
+    alert("📢 Reach 1,000+ poets and an engaged network of students, scholars, and creatives across Zimbabwe and beyond");
+
+    // redirect
+    window.location.href = "advertise.html";
+  };
+}
+
+// =======================
+// INIT (IMPORTANT)
+// =======================
+async function init(){
+  await getPoems();
+  await getAds();
+  renderFeatured();
+}
+
+// 🔁 auto refresh every 15s
+setInterval(renderFeatured, 15000);
+
+init();
+
+// =======================
+// DASHBOARD BUTTON RESTORE
+// =======================
+const authContainer = document.getElementById("auth-container");
+
+const user = JSON.parse(localStorage.getItem("currentUser"));
+
+if (authContainer) {
+  if (user) {
+    authContainer.innerHTML = `
+      <a href="dashboard.html" class="hero-btn" style="background:#38bdf8;color:black;">
+        Dashboard
+      </a>
+    `;
+  } else {
+    authContainer.innerHTML = `
+      <a href="login.html" class="hero-btn" style="background:#38bdf8;color:black;">
+        Login
+      </a>
+    `;
+  }
+}
+
+  // =======================
+  // TAURAAI TOGGLE
+  // =======================
+  const chatBox = document.getElementById("tauraAI-chat");
+  const chatBtn = document.getElementById("tauraAI-btn");
+
+  if(chatBtn){
+    chatBtn.onclick = () => {
+      chatBox.style.display = chatBox.style.display === "flex" ? "none" : "flex";
+    };
+  }
+
+  // =======================
+  // LOCAL INTELLIGENCE (PRIMARY)
+  // =======================
+  function localResponse(question){
+
+    const q = question.toLowerCase();
+
+    // GREETINGS
+    if(q.includes("hi") || q.includes("hello") || q.includes("hey")){
+      return "👋 Hello! I’m TauraAI. I help you explore Zimbabwean poetry, culture, and research. Ask me anything.";
+    }
+
+    // WEBSITE GUIDE
+    if(q.includes("website") || q.includes("zpda") || q.includes("what is this")){
+      return `📚 Zimbabwean Poetry Digital Archive:
+
+• Home → Featured poems  
+• Archive → Search all poems  
+• Explore → Discover themes  
+• Data → Structured datasets  
+• Research → Academic work  
+• Teaching → Learning resources  
+• Submit → Add your poem  
+
+Ask about any section or topic.`;
+    }
+
+    // SEARCH POEMS (MAIN FEATURE)
+    const keyword = q;
+
+    const results = poemsCache.filter(p =>
+      (p.title && p.title.toLowerCase().includes(keyword)) ||
+      (p.author && p.author.toLowerCase().includes(keyword)) ||
+      (p.text && p.text.toLowerCase().includes(keyword))
+    );
+
+    if(results.length > 0){
+      const top = results.slice(0,2);
+
+      let response = `📚 From the Archive:<br><br>`;
+
+      top.forEach(p => {
+        response += `
+          <b>${p.title}</b> by ${p.author || "Unknown"}<br>
+          ${p.text ? p.text.substring(0,120) : ""}...<br><br>
+        `;
+      });
+
+      response += `<i>View more in Archive</i>`;
+      return response;
+    }
+
+    return null;
+  }
+
+  // =======================
+  // SEND MESSAGE
+  // =======================
+  window.send = async function(){
+
+    const input = document.getElementById("input");
+    const messages = document.getElementById("messages");
+
+    if(!input || !messages) return;
+
+    const question = input.value.trim();
+    if(!question) return;
+
+    messages.innerHTML += `<div class="message user">${question}</div>`;
+    input.value = "";
+
+    messages.innerHTML += `<div class="message ai">Typing...</div>`;
+    messages.scrollTop = messages.scrollHeight;
+
+    // ✅ LOCAL FIRST (PRIMARY SYSTEM)
+    const local = localResponse(question);
+    if(local){
+      messages.lastChild.remove();
+      messages.innerHTML += `<div class="message ai">${local}</div>`;
+      messages.scrollTop = messages.scrollHeight;
+      return;
+    }
+
+    // 🤖 AI SECONDARY (BACKUP ONLY)
+    try {
+      const res = await fetch("https://zpda-backend-1.onrender.com/ask-ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question })
+      });
+
+      const data = await res.json();
+
+      messages.lastChild.remove();
+
+      messages.innerHTML += `<div class="message ai">${data.answer || "No response"}</div>`;
+
+    } catch (err) {
+      messages.lastChild.remove();
+      messages.innerHTML += `<div class="message ai">No results found.</div>`;
+    }
+
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  // =======================
+  // ENTER KEY
+  // =======================
+  const inputBox = document.getElementById("input");
+
+  if(inputBox){
+    inputBox.addEventListener("keypress", function(e){
+      if(e.key === "Enter"){
+        window.send();
+      }
+    });
+  }
+
+  // =======================
+  // 🖼️ AD IMAGE MODAL (RESTORED)
+  // =======================
+  window.openImg = function(src){
+    const modal = document.getElementById("imgModal");
+    const img = document.getElementById("modalImg");
+
+    if(!modal || !img) return;
+
+    img.src = src;
+    modal.style.display = "flex";
+  }
+
+  window.closeImg = function(){
+    const modal = document.getElementById("imgModal");
+    if(modal) modal.style.display = "none";
+  }
+
+});
+</script>
+
+
+<footer>
+<p>The Zimbabwean Poetry Digital Archive is an open-access Digital Humanities platform developed by TauraTek.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome - ZPDA</title>
+
+<style>
+/* ===== BODY & BACKGROUND ===== */
+body {
+  margin:0;
+  padding:0;
+  font-family:'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #162447, #1f4068, #5c9ded);
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  overflow:hidden;
+  position:relative;
+}
+
+/* BACKGROUND GLOW */
+body::before {
+  content:"";
+  position:absolute;
+  width:800px;
+  height:800px;
+  background:radial-gradient(circle, rgba(92,157,237,0.4), transparent);
+  animation: pulse 6s infinite;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  z-index:0;
+}
+
+/* FLOATING SHAPES */
+.circle {
+  position:absolute;
+  border-radius:50%;
+  background:rgba(255,255,255,0.05);
+  z-index:0;
+}
+.c1 { width:250px; height:250px; top:5%; left:10%; animation: move1 14s infinite alternate; }
+.c2 { width:180px; height:180px; bottom:5%; right:15%; animation: move2 12s infinite alternate; }
+.c3 { width:120px; height:120px; top:65%; left:75%; animation: move3 10s infinite alternate; }
+
+/* PULSE ANIMATIONS */
+@keyframes pulse {
+  0% { transform:translate(-50%,-50%) scale(1); opacity:0.6; }
+  50% { transform:translate(-50%,-50%) scale(1.3); opacity:0.3; }
+  100% { transform:translate(-50%,-50%) scale(1); opacity:0.6; }
+}
+
+@keyframes move1 { 0% { transform:translateY(0); } 100% { transform:translateY(-50px); } }
+@keyframes move2 { 0% { transform:translateY(0); } 100% { transform:translateY(-35px); } }
+@keyframes move3 { 0% { transform:translateY(0); } 100% { transform:translateY(-25px); } }
+
+/* ===== CONTAINER ===== */
+.container {
+  text-align:center;
+  z-index:1;
+  animation: fadeIn 2s ease-in-out;
+  position:relative;
+}
+
+/* LOGO */
+.logo {
+  width:140px;
+  height:140px;
+  margin:auto;
+  border-radius:50%;
+  background:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  box-shadow:0 10px 40px rgba(0,0,0,0.6), 0 0 60px rgba(92,157,237,0.5);
+  animation: float 3s ease-in-out infinite;
+  overflow:hidden;
+  transition: transform 0.3s;
+}
+.logo:hover { transform:scale(1.12) rotate(-5deg); }
+
+/* IMAGE OR ICON */
+.logo img { width:80%; }
+.logo span { font-size:55px; color:#162447; }
+
+/* TITLE */
+h1 {
+  font-size:2.8em;
+  margin:20px 0 10px;
+  letter-spacing:1px;
+  text-shadow:0 0 15px #5c9ded, 0 0 25px #5c9ded, 0 0 35px #5c9ded;
+  animation: glow 2.5s ease-in-out infinite alternate;
+}
+
+/* TYPING EFFECT */
+.typing {
+  font-size:1.2em;
+  opacity:0.95;
+  height:30px;
+  letter-spacing:0.5px;
+  color:#f0f9ff;
+}
+
+/* ENTER BUTTON */
+.enter-btn {
+  margin-top:30px;
+  padding:16px 35px;
+  background:#5c9ded;
+  border:none;
+  border-radius:40px;
+  font-size:16px;
+  font-weight:bold;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+  box-shadow:0 5px 20px rgba(0,0,0,0.4), 0 0 20px #5c9ded;
+  animation: bounce 2s infinite;
+}
+.enter-btn:hover {
+  background:#4178c0;
+  transform:scale(1.12);
+  box-shadow:0 8px 25px rgba(0,0,0,0.5), 0 0 35px #5c9ded;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from { opacity:0; transform:translateY(30px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@keyframes float {
+  0% { transform:translateY(0); }
+  50% { transform:translateY(-12px); }
+  100% { transform:translateY(0); }
+}
+@keyframes bounce {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-8px); }
+}
+@keyframes glow {
+  0% { text-shadow:0 0 15px #5c9ded,0 0 25px #5c9ded,0 0 35px #5c9ded; }
+  50% { text-shadow:0 0 25px #5c9ded,0 0 35px #5c9ded,0 0 50px #5c9ded; }
+  100% { text-shadow:0 0 15px #5c9ded,0 0 25px #5c9ded,0 0 35px #5c9ded; }
+}
+
+/* ===== MOBILE FIX ONLY ===== */
+@media (max-width: 768px) {
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-bar a {
+    font-size: 0.9em;
+  }
+
+  .hero-about {
+    padding: 60px 15px;
+  }
+
+  .hero-about h1 {
+    font-size: 26px;
+  }
+
+  .hero-about p {
+    font-size: 15px;
+  }
+
+  .container {
+    margin: 20px auto;
+  }
+
+}
+</style>
+</head>
+<body>
+
+<!-- Background floating shapes -->
+<div class="circle c1"></div>
+<div class="circle c2"></div>
+<div class="circle c3"></div>
+
+<div class="container">
+  <!-- LOGO -->
+  <div class="logo">
+    <!-- <img src="logo.jpg"> -->
+    <span>🪶</span>
+  </div>
+
+  <h1>Zimbabwean Poetry<br>Digital Archive</h1>
+
+  <!-- TYPING TEXT -->
+  <div class="typing" id="typingText"></div>
+
+  <button class="enter-btn" onclick="enterSite()">Enter Archive</button>
+</div>
+
+<script>
+// TYPING EFFECT
+const text = "Preserving voices. Celebrating heritage. Inspiring generations.";
+let i = 0;
+function typeWriter() {
+  if (i < text.length) {
+    document.getElementById("typingText").innerHTML += text.charAt(i);
+    i++;
+    setTimeout(typeWriter, 40);
+  }
+}
+typeWriter();
+
+// ENTER BUTTON NAVIGATION
+function enterSite(){
+  window.location.href = "index.html";
+}
+
+// AUTO REDIRECT AFTER 5 SECONDS
+setTimeout(() => {
+  window.location.href = "index.html";
+}, 5000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teaching Resources - ZPDA</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+/* ===== MODERN NAVBAR WITH HOVER UNDERLINE ===== */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(15, 52, 96, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.logo { color: #fff; font-size: 1.4em; font-weight: bold; letter-spacing: 1px; }
+.nav-bar { display: flex; align-items: center; gap: 18px; position: relative; }
+.nav-bar a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-size: 0.95em;
+  position: relative;
+  padding: 5px 0;
+  transition: color 0.3s;
+}
+.nav-bar a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background: #38bdf8;
+  left: 0;
+  bottom: -3px;
+  transition: width 0.3s;
+}
+.nav-bar a:hover::after { width: 100%; }
+.nav-bar a:hover { color: #ffffff; }
+.auth-area { margin-left: 15px; }
+
+/* ===== BODY ===== */
+body { font-family:'Segoe UI',sans-serif; margin:0; background:#0f172a; color:white; }
+.container { max-width:1100px; margin:30px auto; padding:0 15px; }
+h2 { text-align:center; margin-bottom:20px; color:white; font-size:1.8em; }
+
+/* ===== SEARCH ===== */
+.filter { margin-bottom:20px; }
+.filter input {
+  width:100%; max-width:400px; padding:10px 15px; border-radius:8px; border:none;
+  margin-bottom:15px; background:#1e293b; color:white; font-size:0.9em;
+}
+
+/* ===== CATEGORY TABS ===== */
+.tabs { display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; justify-content:center; }
+.tab { background:#1e293b; color:white; padding:8px 18px; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s; }
+.tab.active, .tab:hover { background:#38bdf8; color:black; }
+
+/* ===== GRID ===== */
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; }
+
+/* ===== CARD ===== */
+.card {
+  background:#1e293b;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+  transition:0.3s;
+}
+.card:hover { transform:translateY(-5px); }
+.card h3 { color:#facc15; margin:0; }
+.card p { margin:5px 0; color:white; font-size:14px; }
+.card .category { font-size:12px; color:#94a3b8; margin-top:5px; }
+
+/* ===== ACTIONS ===== */
+.actions { display:flex; gap:12px; margin-top:12px; align-items:center; flex-wrap:wrap; }
+.btn-download { background:#38bdf8; color:#000; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:bold; margin-top:8px; display:inline-block; }
+.btn-download:hover { background:#0ea5e9; color:white; }
+
+/* ===== READ MORE ===== */
+.abstract { white-space: pre-wrap; max-height:80px; overflow:hidden; line-height:1.5; margin-top:5px; text-align:justify; }
+.read-more { color:#38bdf8; cursor:pointer; font-size:13px; font-weight:bold; display:inline-block; margin-top:5px; }
+
+.icon-btn{
+  background:#0f172a;
+  border:1px solid #334155;
+  padding:10px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.3s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#38bdf8;
+  width:40px;
+  height:40px;
+}
+
+.icon-btn:hover{
+  background:#38bdf8;
+  color:black;
+  transform:scale(1.05);
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+
+/* ===== MOBILE FIX ONLY ===== */
+@media (max-width: 768px) {
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-bar a {
+    font-size: 0.9em;
+  }
+
+  .hero-about {
+    padding: 60px 15px;
+  }
+
+  .hero-about h1 {
+    font-size: 26px;
+  }
+
+  .hero-about p {
+    font-size: 15px;
+  }
+
+  .container {
+    margin: 20px auto;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+  <h1 class="logo">Zimbabwean Poetry Digital Archive</h1>
+  <nav class="nav-bar">
+    <a href="index.html">Home</a>
+    <a href="archive.html">Archive</a>
+    <a href="explore.html">Explore</a>
+    <a href="data.html">Data</a>
+    <a href="research.html">Research</a>
+    <a href="teaching.html">Teaching</a>
+    <a href="submit.html">Submit</a>
+    <a href="about.html">About</a>
+    <div id="auth-container" class="auth-area"></div>
+  </nav>
+</header>
+
+<section class="container">
+  <h2>Teaching Resources</h2>
+
+  <div class="filter">
+    <input type="text" id="searchInput" placeholder="Search by title, category, or keyword...">
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-category="All">All</div>
+    <div class="tab" data-category="Lesson Plans">Lesson Plans</div>
+    <div class="tab" data-category="Digital Tools Guides">Digital Tools Guides</div>
+    <div class="tab" data-category="Student Templates">Student Templates</div>
+  </div>
+
+  <div class="grid" id="resourcesGrid"></div>
+</section>
+
+<footer style="text-align:center; padding:15px; color:#94a3b8;">
+  <p>The Zimbabwean Poetry Digital Archive supports teaching and learning through open-access resources for educators and students.</p>
+</footer>
+
+<script>
+
+// ===== AUTH AREA =====
+const authContainer = document.getElementById("auth-container");
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(user){
+  authContainer.innerHTML = `<a href="dashboard.html" class="hero-btn">Dashboard</a>`;
+} else {
+  authContainer.innerHTML = `<button id="dashboard-btn" class="hero-btn">Dashboard</button>`;
+  document.getElementById("dashboard-btn").onclick = ()=>window.location.href="login.html";
+}
+
+// ===== ELEMENTS =====
+const resourcesGrid = document.getElementById("resourcesGrid");
+const searchInput = document.getElementById("searchInput");
+const tabs = document.querySelectorAll(".tab");
+
+let allResources = [];
+let currentCategory = "All";
+
+// ===== LOAD FROM BACKEND =====
+async function loadResources(){
+  try{
+    const res = await fetch("https://zpda-backend-1.onrender.com/teaching-resources");
+    allResources = await res.json();
+    renderResources(allResources);
+  }catch(err){
+    console.error("Failed to load resources:", err);
+    resourcesGrid.innerHTML = "<p>Failed to load resources.</p>";
+  }
+}
+
+loadResources();
+
+// ===== RENDER =====
+function renderResources(list){
+  resourcesGrid.innerHTML = "";
+
+  if(!list || list.length === 0){
+    resourcesGrid.innerHTML = "<p>No teaching resources found.</p>";
+    return;
+  }
+
+  list.forEach(r=>{
+    const div = document.createElement("div");
+    div.className="card";
+
+    const abstract = r.description || "No description available";
+
+    div.innerHTML = `
+      <h3>${r.title}</h3>
+
+      <p class="category">
+        <strong>Author:</strong> ${r.author || "Unknown"}
+      </p>
+
+      <p class="category">
+        <strong>Subject:</strong> ${r.subject || "General"}
+      </p>
+
+      <div class="abstract">${abstract}</div>
+      <span class="read-more">Read more</span>
+
+      <div class="actions">
+        <a href="${r.fileUrl}" target="_blank" class="icon-btn download">
+          <i class="fa-solid fa-download"></i>
+        </a>
+
+        <button class="icon-btn share">
+          <i class="fa-solid fa-share-nodes"></i>
+        </button>
+      </div>
+    `;
+
+    // READ MORE
+    const readBtn = div.querySelector(".read-more");
+    const abs = div.querySelector(".abstract");
+
+    readBtn.onclick = ()=>{
+      if(abs.style.maxHeight==="none"){
+        abs.style.maxHeight="80px";
+        readBtn.innerText="Read more";
+      } else {
+        abs.style.maxHeight="none";
+        readBtn.innerText="Read less";
+      }
+    };
+
+    // ✅ FIXED SHARE (dynamic current link at click time)
+    div.querySelector(".share").onclick = ()=>{
+      const currentLink = window.location.href;
+
+      const shareText = `${r.title} - ${abstract}
+
+View here:
+${currentLink}`;
+
+      if(navigator.share){
+        navigator.share({
+          title: r.title,
+          text: shareText,
+          url: currentLink
+        });
+      } else {
+        navigator.clipboard.writeText(shareText);
+        alert("Copied!");
+      }
+    };
+
+    resourcesGrid.appendChild(div);
+  });
+}
+
+// ===== FILTER =====
+tabs.forEach(tab=>{
+  tab.onclick = ()=>{
+    tabs.forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+
+    currentCategory = tab.dataset.category;
+    filterAndRender();
+  };
+});
+
+searchInput.addEventListener("input", filterAndRender);
+
+function filterAndRender(){
+  const term = searchInput.value.toLowerCase();
+
+  const filtered = allResources.filter(r=>{
+    const matchCategory =
+      currentCategory === "All" ||
+      r.subject === currentCategory;
+
+    const matchSearch =
+      r.title?.toLowerCase().includes(term) ||
+      r.description?.toLowerCase().includes(term) ||
+      r.subject?.toLowerCase().includes(term) ||
+      r.author?.toLowerCase().includes(term);
+
+    return matchCategory && matchSearch;
+  });
+
+  renderResources(filtered);
+}
+
+</script>
+
+</body>
+</html>

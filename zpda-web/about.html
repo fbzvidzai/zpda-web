@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About ZPDA</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+/* ===== BODY ===== */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f172a;
+  color: white;
+}
+
+/* ===== MODERN NAVBAR (same as explore.html) ===== */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(15, 52, 96, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.logo { color: #fff; font-size: 1.4em; font-weight: bold; letter-spacing: 1px; }
+.nav-bar { display: flex; align-items: center; gap: 18px; }
+.nav-bar a { color: #e0e0e0; text-decoration: none; font-size: 0.95em; position: relative; padding: 5px 0; transition: color 0.3s; }
+.nav-bar a::after { content: ""; position: absolute; width: 0%; height: 2px; background: #5c9ded; left: 0; bottom: -3px; transition: width 0.3s; }
+.nav-bar a:hover { color: #ffffff; }
+.nav-bar a:hover::after { width: 100%; }
+.auth-area { margin-left: 15px; position: relative; }
+
+/* ===== HERO ABOUT ===== */
+.hero-about {
+  background: url('images/poetry-banner.jpg') center/cover no-repeat;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.hero-about h1 {
+  font-size: 36px;
+  margin-bottom: 15px;
+  color: #38bdf8;
+}
+
+.hero-about p {
+  font-size: 18px;
+  max-width: 700px;
+  margin: 0 auto 25px;
+  color: #f1f5f9;
+}
+
+.hero-about a {
+  display: inline-block;
+  padding: 12px 25px;
+  margin: 5px;
+  background: #38bdf8;
+  color: black;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.hero-about a:hover {
+  background: #0ea5e9;
+  color: white;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #38bdf8;
+}
+
+.container ul {
+  margin-left: 20px;
+  line-height: 1.8;
+}
+
+.container ul li {
+  margin-bottom: 10px;
+}
+
+/* ===== CONTACT SECTION ===== */
+.contact {
+  background: #1e293b;
+  padding: 25px 20px;
+  border-radius: 12px;
+  margin-top: 40px;
+  text-align: center;
+}
+
+.contact h2 {
+  color: #38bdf8;
+  margin-bottom: 20px;
+}
+
+.contact a {
+  display: inline-block;
+  margin: 10px;
+  color: #38bdf8;
+  font-size: 1.2em;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.contact a:hover {
+  color: #0ea5e9;
+  transform: scale(1.1);
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: #162447;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: 40px;
+  border-top: 1px solid #38bdf8;
+}
+
+/* ===== MOBILE FIX ONLY ===== */
+@media (max-width: 768px) {
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-bar a {
+    font-size: 0.9em;
+  }
+
+  .hero-about {
+    padding: 60px 15px;
+  }
+
+  .hero-about h1 {
+    font-size: 26px;
+  }
+
+  .hero-about p {
+    font-size: 15px;
+  }
+
+  .container {
+    margin: 20px auto;
+  }
+
+}
+</style>
+</head>
+<body>
+
+<header class="main-header">
+  <h1 class="logo">Zimbabwean Poetry Digital Archive</h1>
+  <nav class="nav-bar">
+    <a href="index.html">Home</a>
+    <a href="archive.html">Archive</a>
+    <a href="explore.html">Explore</a>
+    <a href="data.html">Data</a>
+    <a href="research.html">Research</a>
+    <a href="teaching.html">Teaching</a>
+    <a href="submit.html">Submit</a>
+    <a href="about.html" class="active">About</a>
+    <div id="auth-container" class="auth-area"></div>
+  </nav>
+</header>
+
+<!-- Hero Banner -->
+<section class="hero-about">
+  <h1>Voices. Culture. Identity.</h1>
+  <p>The Zimbabwean Poetry Digital Archive (ZPDA) preserves, celebrates, and shares Zimbabwean poetry in a dynamic digital space. Explore, analyze, and contribute to a growing literary legacy.</p>
+  <a href="submit.html">Submit Your Poem</a>
+  <a href="explore.html">Explore Themes</a>
+  <a href="https://www.paypal.com/donate/?hosted_button_id=DHZWFBMNBMVBA">Donate</a>
+</section>
+
+<section class="container">
+  <h2>Why ZPDA?</h2>
+  <p>ZPDA is an open-access platform for poets, researchers, educators, and enthusiasts to:</p>
+  <ul>
+    <li><strong>Preserve:</strong> Safeguard Zimbabwean poetic heritage for future generations.</li>
+    <li><strong>Explore:</strong> Interactive tools to discover trends, themes, and connections.</li>
+    <li><strong>Engage:</strong> Join a growing community of literary minds.</li>
+    <li><strong>Contribute:</strong> Submit poems, collections, and digital resources.</li>
+  </ul>
+
+  <h2>Get Involved</h2>
+  <ul>
+    <li><a href="submit.html">Submit your poems</a></li>
+    <li><a href="explore.html">Explore themes and visualizations</a></li>
+    <li>Engage with a vibrant Zimbabwean literary community</li>
+  </ul>
+</section>
+
+<section class="contact">
+  <h2>Contact & Connect</h2>
+  <a href="https://wa.me/263773674062" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+  <a href="mailto:fbzvidzai@gmail.com"><i class="fas fa-envelope"></i> Email</a>
+  <a href="https://www.facebook.com/fbzvidzai" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
+  <a href="https://bsky.app/profile/farai.zvidzai.bsky.social" target="_blank"><i class="fas fa-globe"></i> Bluesky</a>
+</section>
+
+<footer>
+  <p>The Zimbabwean Poetry Digital Archive is an open-access Digital Humanities platform developed to support the study and preservation of Zimbabwean poetry.</p>
+</footer>
+
+<script>
+// ===== DASHBOARD / LOGIN NAV BUTTON =====
+const authContainer = document.getElementById("auth-container");
+const user = JSON.parse(localStorage.getItem("currentUser")); // matches submit & login pages
+
+if(user){
+  authContainer.innerHTML = `<a href="dashboard.html" class="hero-btn" style="background:#38bdf8; color:black; padding:8px 15px; border-radius:6px; font-weight:bold;">Dashboard</a>`;
+}else{
+  authContainer.innerHTML = `<a href="login.html" class="hero-btn" style="background:#38bdf8; color:black; padding:8px 15px; border-radius:6px; font-weight:bold;">Login</a>`;
+}
+</script>
+
+</body>
+</html>

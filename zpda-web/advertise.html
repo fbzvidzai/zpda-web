@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advertise with ZPDA</title>
+
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#f4f4f4;
+  color:#162447;
+}
+
+.main-header {
+  background:#162447;
+  padding:12px 25px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo { color:white; font-size:1.4em; font-weight:bold; }
+
+.nav-bar a {
+  color:white;
+  text-decoration:none;
+  margin-left:15px;
+  font-weight:bold;
+}
+
+.container {
+  max-width:600px;
+  margin:auto;
+  padding:30px 20px;
+  background:white;
+  margin-top:40px;
+  border-radius:12px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+h2 { text-align:center; color:#162447; }
+p { text-align:center; }
+
+label { display:block; margin-top:15px; font-weight:bold; }
+input, textarea, select {
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  font-size:0.95em;
+}
+
+button {
+  margin-top:20px;
+  padding:12px 20px;
+  border:none;
+  border-radius:6px;
+  background:#5c9ded;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover { background:#4178c0; }
+
+#home-btn {
+  display:block;
+  text-align:center;
+  margin-top:15px;
+  text-decoration:none;
+  font-weight:bold;
+  color:#5c9ded;
+}
+
+#ussd-code {
+  margin-top:10px;
+  padding:10px;
+  background:#e0f0ff;
+  border-radius:6px;
+  font-weight:bold;
+  text-align:center;
+  color:#162447;
+}
+
+footer {
+  text-align:center;
+  margin-top:40px;
+  padding:20px 0;
+  background:#162447;
+  color:white;
+  font-size:0.9em;
+}
+
+/* ===== MOBILE FIX ONLY ===== */
+@media (max-width: 768px) {
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-bar a {
+    font-size: 0.9em;
+  }
+
+  .hero-about {
+    padding: 60px 15px;
+  }
+
+  .hero-about h1 {
+    font-size: 26px;
+  }
+
+  .hero-about p {
+    font-size: 15px;
+  }
+
+  .container {
+    margin: 20px auto;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+  <h1 class="logo">ZPDA Advertise</h1>
+  <nav class="nav-bar">
+    <a href="index.html">Home</a>
+  </nav>
+</header>
+
+<div class="container">
+  <h2>Submit Your Advertisement</h2>
+  <p>Fill the form below to advertise with ZPDA. Your ad will rotate with featured poems on the homepage after admin approval.</p>
+
+  <form id="adForm">
+    <label for="adText">Ad Text & Website / Link (optional)</label>
+    <textarea id="adText" placeholder="Enter your ad message...https://yourlink.com" required></textarea>
+
+    <label for="adImage">Upload Flyer (optional)</label>
+    <input type="file" id="adImage" accept="image/*">
+
+    <label for="duration">Duration (days)</label>
+    <select id="duration">
+      <option value="1">1 day - $1</option>
+      <option value="3">3 days - $3</option>
+      <option value="5">5 days - $5</option>
+      <option value="7">7 days - $7</option>
+    </select>
+
+    <label for="name">Your Name</label>
+    <input type="text" id="name" placeholder="Enter your name" required>
+
+    <label for="phone">Working Phone Number</label>
+    <input type="tel" id="phone" placeholder="+263..." required>
+
+    <label for="approvalCode">Ecocash Approval Code</label>
+    <input type="text" id="approvalCode" placeholder="Enter approval code after payment" required>
+
+    <button type="button" id="generate-ussd">Generate Ecocash USSD Code</button>
+    <div id="ussd-code" style="display:none;"></div>
+
+    <button type="submit">Submit Advertisement</button>
+  </form>
+
+  <a id="home-btn" href="index.html">← Back to Home</a>
+</div>
+
+<script>
+// ===== USSD GENERATION =====
+document.getElementById("generate-ussd").addEventListener("click",()=>{
+  const duration = document.getElementById("duration").value;
+  const amount = parseInt(duration);
+  const ecoNumber = "0773674062";
+  const ussd = `*153*1*1*${ecoNumber}*${amount}#`;
+
+  const ussdDiv = document.getElementById("ussd-code");
+  ussdDiv.style.display = "block";
+  ussdDiv.textContent = `Dial this USSD on your phone to pay Ecocash: ${ussd}\nAfter payment, enter your name, phone, and approval code in the form.`;
+});
+
+// ===== IMAGE COMPRESSION =====
+function compressImage(file){
+  return new Promise((resolve)=>{
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = (event)=>{
+      const img = new Image();
+      img.src = event.target.result;
+
+      img.onload = ()=>{
+        const canvas = document.createElement("canvas");
+        const maxWidth = 800;
+        const scaleSize = maxWidth / img.width;
+
+        canvas.width = maxWidth;
+        canvas.height = img.height * scaleSize;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+        resolve(compressedBase64);
+      };
+    };
+  });
+}
+
+// ===== AD FORM SUBMISSION =====
+const adForm = document.getElementById("adForm");
+
+adForm.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+
+  const text = document.getElementById("adText").value.trim();
+  const imageFile = document.getElementById("adImage").files[0];
+  const duration = document.getElementById("duration").value;
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const approvalCode = document.getElementById("approvalCode").value.trim();
+
+  if(!text || !name || !phone || !approvalCode){
+    return alert("Please fill all required fields.");
+  }
+
+  let imageData = null;
+
+  if(imageFile){
+    imageData = await compressImage(imageFile);
+  }
+
+  try{
+    const res = await fetch("https://zpda-backend-1.onrender.com/ads", {
+      method: "POST",
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify({
+        text: text,
+        image: imageData,
+        duration: duration,
+        name: name,
+        phone: phone,
+        approvalCode: approvalCode
+      })
+    });
+
+    const data = await res.json();
+
+    if(res.ok){
+      alert("✅ Advertisement submitted successfully! Await admin approval.");
+      adForm.reset();
+      document.getElementById("ussd-code").style.display = "none";
+      window.location.href = "index.html";
+    } else {
+      alert(data.error || "❌ Failed to submit advertisement");
+    }
+
+  }catch(err){
+    console.error(err);
+    alert("❌ Server error. Make sure backend is running.");
+  }
+});
+</script>
+
+<footer>
+<p>&copy; Zimbabwean Poetry Digital Archive 2026</p>
+</footer>
+
+</body>
+</html>

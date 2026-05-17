@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data - ZPDA</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+/* ===== FORCE DARK BACKGROUND (FIX MOBILE WHITE ISSUE) ===== */
+html, body {
+  margin:0;
+  padding:0;
+  background:#0f172a !important;
+  color:white;
+}
+
+/* ===== NAVBAR ===== */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(15, 52, 96, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.logo {
+  color:#fff;
+  font-size:1.4em;
+  font-weight:bold;
+  letter-spacing:1px;
+}
+
+.nav-bar {
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+.nav-bar a {
+  color:#e0e0e0;
+  text-decoration:none;
+  font-size:0.95em;
+  padding:5px 0;
+  position:relative;
+}
+
+.nav-bar a::after {
+  content:"";
+  position:absolute;
+  width:0%;
+  height:2px;
+  background:#5c9ded;
+  left:0;
+  bottom:-3px;
+  transition:width 0.3s;
+}
+
+.nav-bar a:hover::after { width:100%; }
+
+.auth-area { margin-left:15px; }
+
+/* ===== SECTION ===== */
+section {
+  padding:20px;
+  max-width:900px;
+  margin:auto;
+  color:white;
+}
+
+/* ===== CHARTS ===== */
+.chart-container {
+  background: linear-gradient(135deg,#1e293b,#0f172a);
+  padding:18px;
+  border-radius:14px;
+  margin-bottom:25px;
+  text-align:center;
+  max-width:650px;
+  margin-left:auto;
+  margin-right:auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  transition:0.3s;
+}
+
+.chart-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
+
+canvas {
+  max-height:220px !important;
+}
+
+/* ===== ICON BUTTONS ===== */
+.chart-actions {
+  margin-top:10px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+
+.chart-actions button {
+  background:#5c9ded;
+  border:none;
+  color:white;
+  padding:8px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:14px;
+  width:35px;
+  height:35px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:0.2s;
+}
+
+.chart-actions button:hover {
+  background:#4178c0;
+  transform:scale(1.1);
+}
+
+/* ===== LEADERBOARD ===== */
+.leaderboard {
+  position: fixed;
+  left: 10px;
+  top: 120px;
+  width: 200px;
+  background:#1e293b;
+  padding:12px;
+  border-radius:12px;
+  font-size:12px;
+  color:white;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.leaderboard h3 {
+  color:#facc15;
+  margin-bottom:8px;
+  font-size:13px;
+}
+
+.poet {
+  margin-bottom:8px;
+  border-bottom:1px solid #334155;
+  padding-bottom:6px;
+}
+
+.poet small {
+  color:#38bdf8;
+}
+
+/* ===== RIGHT SIDE STATS ===== */
+.archive-stats {
+  position: fixed;
+  right: 10px;
+  top: 120px;
+  width: 200px;
+  background:#1e293b;
+  padding:12px;
+  border-radius:12px;
+  font-size:12px;
+  color:white;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.archive-stats h3 {
+  color:#facc15;
+  margin-bottom:8px;
+  font-size:13px;
+}
+
+.stat-item {
+  margin-bottom:8px;
+  border-bottom:1px solid #334155;
+  padding-bottom:6px;
+}
+
+/* ===== MOBILE FIX ONLY ===== */
+@media (max-width: 768px) {
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-bar a {
+    font-size: 0.9em;
+  }
+
+  .hero-about {
+    padding: 60px 15px;
+  }
+
+  .hero-about h1 {
+    font-size: 26px;
+  }
+
+  .hero-about p {
+    font-size: 15px;
+  }
+
+  .container {
+    margin: 20px auto;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="main-header">
+  <h1 class="logo">Zimbabwean Poetry Digital Archive</h1>
+  <nav class="nav-bar">
+    <a href="index.html">Home</a>
+    <a href="archive.html">Archive</a>
+    <a href="explore.html">Explore</a>
+    <a href="data.html" class="active">Data</a>
+    <a href="research.html">Research</a>
+    <a href="teaching.html">Teaching</a>
+    <a href="submit.html">Submit</a>
+    <a href="about.html">About</a>
+    <div id="auth-container" class="auth-area"></div>
+  </nav>
+</header>
+
+<!-- LEADERBOARD -->
+<div class="leaderboard">
+  <h3>🏆 Top Poets (Likes)</h3>
+  <div id="poetBoard"></div>
+</div>
+
+<!-- ARCHIVE STATS -->
+<div class="archive-stats">
+  <h3>📊 Archive Stats</h3>
+  <div class="stat-item" id="totalPoems">Total Poems: 0</div>
+</div>
+
+<section>
+
+<h2>Poems by Genre</h2>
+<div class="chart-container">
+  <canvas id="genreChart"></canvas>
+  <div class="chart-actions">
+    <button onclick="downloadChart('genreChart')"><i class="fa-solid fa-download"></i></button>
+    <button onclick="shareChart('genreChart')"><i class="fa-solid fa-share-nodes"></i></button>
+  </div>
+</div>
+
+<h2>Poems by Language</h2>
+<div class="chart-container">
+  <canvas id="languageChart"></canvas>
+  <div class="chart-actions">
+    <button onclick="downloadChart('languageChart')"><i class="fa-solid fa-download"></i></button>
+    <button onclick="shareChart('languageChart')"><i class="fa-solid fa-share-nodes"></i></button>
+  </div>
+</div>
+
+<h2>Poems by Period</h2>
+<div class="chart-container">
+  <canvas id="periodChart"></canvas>
+  <div class="chart-actions">
+    <button onclick="downloadChart('periodChart')"><i class="fa-solid fa-download"></i></button>
+    <button onclick="shareChart('periodChart')"><i class="fa-solid fa-share-nodes"></i></button>
+  </div>
+</div>
+
+</section>
+
+<script>
+
+let poems = [];
+let genreChart, languageChart, periodChart;
+
+async function fetchPoems(){
+  const res = await fetch("https://zpda-backend-1.onrender.com/poems");
+  poems = await res.json();
+
+  document.getElementById("totalPoems").innerText = "Total Poems: " + poems.length;
+
+  drawCharts();
+  drawLeaderboard(); // ✅ RESTORED
+}
+
+/* COUNT */
+function countBy(arr, key){
+  const c = {};
+  arr.forEach(p=>{
+    if(!p[key]) return;
+    c[p[key]] = (c[p[key]] || 0) + 1;
+  });
+  return c;
+}
+
+/* CHART */
+function createChart(id, type, dataObj){
+  return new Chart(document.getElementById(id), {
+    type,
+    data:{
+      labels:Object.keys(dataObj),
+      datasets:[{
+        data:Object.values(dataObj),
+        backgroundColor:[
+          "#38bdf8","#f472b6","#facc15",
+          "#34d399","#a78bfa","#f87171"
+        ]
+      }]
+    },
+    options:{ responsive:true, plugins:{ legend:{ display:false } } }
+  });
+}
+
+/* DRAW */
+function drawCharts(){
+  const genres = countBy(poems,'genre');
+  const langs = countBy(poems,'language');
+  const periods = countBy(poems,'period');
+
+  if(genreChart) genreChart.destroy();
+  if(languageChart) languageChart.destroy();
+  if(periodChart) periodChart.destroy();
+
+  genreChart = createChart("genreChart","bar",genres);
+  languageChart = createChart("languageChart","pie",langs);
+  periodChart = createChart("periodChart","bar",periods);
+}
+
+/* DOWNLOAD */
+function downloadChart(id){
+  const canvas = document.getElementById(id);
+  const link = document.createElement("a");
+  link.download = id + ".png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+/* SHARE WITH DATA LINK */
+function shareChart(id){
+  const link = window.location.href;
+
+  if(navigator.share){
+    navigator.share({
+      title:"ZPDA Data",
+      text:"Explore Zimbabwean Poetry Data: " + link
+    });
+  } else {
+    navigator.clipboard.writeText(link);
+    alert("Link copied!");
+  }
+}
+
+/* LEADERBOARD (FULLY RESTORED) */
+function drawLeaderboard(){
+  const poets = {};
+
+  poems.forEach(p=>{
+    const name = p.author || "Unknown Poet";
+    poets[name] = (poets[name] || 0) + (p.likes || 0);
+  });
+
+  const sorted = Object.entries(poets)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,5);
+
+  document.getElementById("poetBoard").innerHTML =
+    sorted.map(p=>`
+      <div class="poet">
+        ${p[0]}<br>
+        <small>❤️ ${p[1]} likes</small>
+      </div>
+    `).join("");
+}
+
+/* AUTH */
+const user = JSON.parse(localStorage.getItem("user"));
+const authContainer = document.getElementById("auth-container");
+
+if(user){
+  authContainer.innerHTML = `<a href="dashboard.html" class="hero-btn">Dashboard</a>`;
+}else{
+  authContainer.innerHTML = `<button class="hero-btn" onclick="location.href='login.html'">Dashboard</button>`;
+}
+
+/* INIT */
+fetchPoems();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit - ZPDA</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ===== BODY ===== */
+body, html {
+  margin:0;
+  padding:0;
+  font-family:'Segoe UI', sans-serif;
+  height:100%;
+  background:#0f172a;
+  color:white;
+  overflow:hidden;
+}
+
+/* ===== HEADER ===== */
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 25px;
+  background:rgba(22,36,71,0.95);
+  position: sticky;
+  top:0;
+  z-index:1000;
+}
+header h1 {
+  font-size:1.5em;
+  font-weight:bold;
+  color:#38bdf8;
+}
+header nav {
+  display:flex;
+  gap:15px;
+}
+header nav a {
+  color:white;
+  text-decoration:none;
+  font-weight:500;
+}
+header nav a:hover, header nav a.active { color:#5c9ded; }
+
+/* ===== BACKGROUND PREVIEW ===== */
+.bg-preview {
+  position: absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  overflow:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+  padding:80px 40px 40px 40px;
+  background: #0f172a;
+  filter: blur(6px) brightness(0.6);
+  pointer-events: none; /* prevent interaction */
+  opacity:0;
+  transition: opacity 1s ease-in-out;
+}
+
+.bg-preview.show {
+  opacity:1;
+}
+
+.bg-card {
+  background:white;
+  color:#162447;
+  border-radius:12px;
+  padding:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  font-size:0.95em;
+  transform: scale(1);
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* Hover animation */
+.bg-card:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* ===== LOGIN / SIGNUP OVERLAY ===== */
+.login-overlay {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  backdrop-filter: blur(5px);
+  background: rgba(0,0,0,0.65);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:10000;
+}
+
+.login-box {
+  background:#1e293b;
+  padding:40px;
+  border-radius:16px;
+  text-align:center;
+  max-width:400px;
+  width:90%;
+  box-shadow:0 8px 25px rgba(0,0,0,0.5);
+}
+.login-box h2 {
+  color:#38bdf8;
+  margin-bottom:20px;
+}
+.login-box p {
+  color:#facc15;
+  margin-bottom:25px;
+  font-size:16px;
+}
+.login-box button {
+  background:#38bdf8;
+  border:none;
+  color:black;
+  padding:12px 25px;
+  font-weight:bold;
+  border-radius:8px;
+  cursor:pointer;
+  margin:5px;
+  transition:0.3s;
+}
+.login-box button:hover { background:#0ea5e9; color:white; }
+
+/* ===== FOOTER ===== */
+footer {
+  position:absolute;
+  bottom:0;
+  width:100%;
+  background:#162447;
+  color:white;
+  text-align:center;
+  padding:20px;
+}
+
+/* ===== SCROLLBAR ===== */
+.bg-preview::-webkit-scrollbar {
+  width:8px;
+}
+.bg-preview::-webkit-scrollbar-thumb {
+  background:#38bdf8;
+  border-radius:4px;
+}
+
+/* ===== MOBILE FIX ONLY ===== */
+@media (max-width: 768px) {
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-bar a {
+    font-size: 0.9em;
+  }
+
+  .hero-about {
+    padding: 60px 15px;
+  }
+
+  .hero-about h1 {
+    font-size: 26px;
+  }
+
+  .hero-about p {
+    font-size: 15px;
+  }
+
+  .container {
+    margin: 20px auto;
+  }
+
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Zimbabwean Poetry Digital Archive</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="archive.html">Archive</a>
+    <a href="explore.html">Explore</a>
+    <a href="data.html">Data</a>
+    <a href="research.html">Research</a>
+    <a href="teaching.html">Teaching</a>
+    <a href="submit.html" class="active">Submit</a>
+    <a href="about.html">About</a>
+    <div id="auth-container"></div>
+  </nav>
+</header>
+
+<!-- ===== BACKGROUND PREVIEW OF ARCHIVE ===== -->
+<div class="bg-preview" id="bgPreview"></div>
+
+<!-- ===== LOGIN / SIGNUP OVERLAY ===== -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h2>Login Required</h2>
+    <p>To submit a poem, please login or sign up.</p>
+    <button onclick="location.href='login.html'">Login</button>
+    <button onclick="location.href='signup.html'">Sign Up</button>
+    <button onclick="location.href='index.html'">Home</button>
+  </div>
+</div>
+
+<footer>
+  <p>The Zimbabwean Poetry Digital Archive is an open-access platform supporting Zimbabwean poetry</p>
+</footer>
+
+<script>
+// ===== NAV DASHBOARD / LOGIN BUTTON =====
+const authContainer = document.getElementById("auth-container");
+const user = JSON.parse(localStorage.getItem("currentUser"));
+
+if(user){
+  authContainer.innerHTML = `<a href="dashboard.html" style="background:#38bdf8;color:black;padding:6px 12px;border-radius:6px;font-weight:bold;text-decoration:none;">Dashboard</a>`;
+}else{
+  authContainer.innerHTML = `<a href="login.html" style="background:#38bdf8;color:black;padding:6px 12px;border-radius:6px;font-weight:bold;text-decoration:none;">Login</a>`;
+}
+
+// ===== LOAD PREVIEW POEMS =====
+async function loadPreview(){
+  try {
+    const res = await fetch("https://zpda-backend-1.onrender.com/poems");
+    const poems = await res.json();
+    const preview = document.getElementById("bgPreview");
+
+    poems.slice(-6).reverse().forEach(p=>{
+      const div = document.createElement("div");
+      div.className = "bg-card";
+      div.innerHTML = `
+        <h3>${p.title}</h3>
+        <p><strong>${p.author}</strong></p>
+        <p>${p.text.slice(0,80)}...</p>
+      `;
+      preview.appendChild(div);
+    });
+
+    // Fade-in animation
+    setTimeout(()=>{ preview.classList.add("show"); },100);
+
+  } catch(err){
+    console.error("Failed to load preview:", err);
+  }
+}
+
+loadPreview();
+</script>
+
+</body>
+</html>

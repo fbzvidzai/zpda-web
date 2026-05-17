@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - ZPDA</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+/* ===== NAVBAR ===== */
+.main-header {
+  position: sticky;
+  top:0;
+  z-index:1000;
+  background: rgba(15,52,96,0.95);
+  backdrop-filter: blur(10px);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 20px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.2);
+  flex-wrap: wrap;
+}
+.logo { color:#fff; font-size:1.5em; font-weight:bold; }
+.nav-bar { display:flex; align-items:center; gap:15px; flex-wrap: wrap; }
+.nav-bar a { color:#e0e0e0; text-decoration:none; font-size:0.95em; padding:5px 0; }
+.nav-bar a:hover { color:white; }
+.auth-area { margin-left:15px; }
+
+/* ===== BODY ===== */
+body {
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:#0f172a;
+  color:white;
+}
+
+/* ===== CONTAINER ===== */
+.container { max-width:1100px; margin:30px auto; padding:0 15px; }
+
+/* ===== WELCOME ===== */
+#welcome { font-size:1.5em; margin-bottom:20px; color:#facc15; text-align:center; }
+
+/* ===== DASHBOARD GRID ===== */
+.dashboard-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;
+}
+.dashboard-card {
+  background:#1e293b;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+  transition:0.3s;
+}
+.dashboard-card:hover { transform:translateY(-5px); }
+.dashboard-card h3 { color:#facc15; margin-bottom:10px; }
+.dashboard-card p { color:#e2e8f0; margin-bottom:15px; }
+.dashboard-btn {
+  display:inline-block;
+  background:#5c9ded;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  text-decoration:none;
+  transition:0.3s;
+}
+.dashboard-btn:hover { background:#4178c0; }
+
+/* ===== TABLE ===== */
+#poemsTable { width:100%; border-collapse:collapse; margin-top:20px; }
+#poemsTable th, #poemsTable td { padding:10px; text-align:left; border-bottom:1px solid #ccc; color:white; font-size:0.9em; }
+#poemsTable th { background:#162447; }
+#poemsTable tr:nth-child(even) { background:#1e293b; }
+#poemsTable tr:hover { background:#0f172a; }
+
+/* ===== BUTTON BASE ===== */
+.btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 3px;
+  font-size: 0.9em;
+  transition: 0.2s ease;
+}
+
+/* READ */
+.read-btn {
+  background: #38bdf8;
+  color: #000;
+}
+
+/* EDIT */
+.edit-btn {
+  background: #facc15;
+  color: #000;
+}
+
+/* DELETE */
+.delete-btn {
+  background: #e43f5a;
+  color: #fff;
+}
+
+/* SAVE */
+.save-btn {
+  background: #22c55e;
+  color: #fff;
+}
+
+/* ===== HOVER EFFECT ===== */
+.btn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* ===== OPTIONAL: ACTIVE CLICK FEEDBACK ===== */
+.btn:active {
+  transform: scale(0.95);
+}
+
+/* ===== STATISTICS ===== */
+#myStats {
+  margin-top:30px;
+  background:#1e293b;
+  color:white;
+  padding:15px;
+  border-radius:16px;
+}
+#myStats h2 { text-align:center; margin-bottom:15px; color:#facc15; }
+.stats-charts {
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+  justify-content:center;
+  margin-top:10px;
+}
+.stats-chart {
+  background:#0f172a;
+  padding:10px;
+  border-radius:12px;
+  max-width:200px;
+  text-align:center;
+  color:white;
+  flex:1 1 150px;
+}
+.stats-chart h4 { font-size:14px; color:#5c9ded; margin:5px 0; }
+
+/* ===== MODALS ===== */
+.modal { display:none; position:fixed; z-index:999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.7); }
+.modal-content { background:#1e293b; margin:10% auto; padding:20px; border-radius:16px; width:90%; max-width:600px; max-height:70vh; overflow-y:auto; position:relative; color:white; }
+.modal-close { position:absolute; top:10px; right:20px; color:#e43f5a; font-size:24px; font-weight:bold; cursor:pointer; }
+
+/* ===== PROFILE ===== */
+#profile-pic { display:flex; align-items:center; justify-content:center; background-color:#5c9ded; color:white; font-weight:bold; font-size:1em; cursor:pointer; border-radius:50%; width:40px; height:40px; border:2px solid white; overflow:hidden; }
+#profile-dropdown a:hover { background-color:#1f4a78; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:768px){
+  .dashboard-grid { grid-template-columns:1fr; }
+  .stats-charts { flex-direction:column; align-items:center; }
+}
+
+/* ===== MOBILE FIX ONLY ===== */
+@media (max-width: 768px) {
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-bar a {
+    font-size: 0.9em;
+  }
+
+  .hero-about {
+    padding: 60px 15px;
+  }
+
+  .hero-about h1 {
+    font-size: 26px;
+  }
+
+  .hero-about p {
+    font-size: 15px;
+  }
+
+  .container {
+    margin: 20px auto;
+  }
+
+}
+</style>
+</head>
+<body>
+
+<header class="main-header">
+  <h1 class="logo">Zimbabwean Poetry Digital Archive</h1>
+  <nav class="nav-bar">
+    <a href="index.html">Home</a>
+    <a href="archive.html">Archive</a>
+    <a href="explore.html">Explore</a>
+    <a href="data.html">Data</a>
+    <a href="research.html">Research</a>
+    <a href="teaching.html">Teaching</a>
+    <a href="about.html">About</a>
+    <div id="auth-container" class="auth-area"></div>
+  </nav>
+</header>
+
+<section class="container">
+  <h2 id="welcome"></h2>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-card">
+      <h3>📝 Submit Poetry</h3>
+      <p>Contribute your work to the archive.</p>
+      <a href="poemsubmit.html" class="dashboard-btn">Submit</a>
+    </div>
+    <div class="dashboard-card">
+      <h3>🌍 Explore</h3>
+      <p>Discover Zimbabwean poetry.</p>
+      <a href="explore.html" class="dashboard-btn">Explore</a>
+    </div>
+  </div>
+
+  <div id="myStats">
+    <h2>My Submission Statistics</h2>
+    <p id="totalPoems">Total Poems Submitted: 0</p>
+    <div class="stats-charts">
+      <div class="stats-chart">
+        <h4>By Genre</h4>
+        <canvas id="userGenreChart"></canvas>
+      </div>
+      <div class="stats-chart">
+        <h4>By Language</h4>
+        <canvas id="userLanguageChart"></canvas>
+      </div>
+      <div class="stats-chart">
+        <h4>By Period</h4>
+        <canvas id="userPeriodChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div id="myPoemsSection" style="margin-top:30px;">
+    <h3 style="color:#facc15;">My Poems</h3>
+    <table id="poemsTable">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Genre</th>
+          <th>Language</th>
+          <th>Period</th>
+          <th>Likes</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="poemsBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- READ POEM MODAL -->
+<div id="poemModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <h3 id="modalTitle"></h3>
+    <p id="modalText"></p>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  let user = JSON.parse(localStorage.getItem("user"));
+  let token = localStorage.getItem("zpdaToken");
+  if(!user || !token) window.location.href="login.html";
+
+  const userName = user.username || "User";
+  document.getElementById("welcome").innerText = `Hi, ${userName} 👋`;
+
+  const authContainer = document.getElementById("auth-container");
+  const savedImage = localStorage.getItem("profileImage");
+
+  let isEditing = false; // ✅ NEW FIX
+
+  window.addEventListener("poemLiked", () => {
+    updateUserStats();
+  });
+
+  function getInitials(name){
+    if(!name) return "U";
+    const parts = name.trim().split(" ");
+    return parts.length===1 ? parts[0][0].toUpperCase() : (parts[0][0]+parts[1][0]).toUpperCase();
+  }
+
+  if(user){
+    authContainer.innerHTML = `
+      <div style="display:flex; align-items:center; gap:10px; position:relative;">
+        <div id="profile-pic">${savedImage ? `<img src="${savedImage}" style="width:100%;height:100%;object-fit:cover;">` : getInitials(userName)}</div>
+        <input type="file" id="uploadPic" style="display:none;" accept="image/*">
+        <div id="profile-dropdown" style="position:absolute; top:50px; right:0; background:#0f3460; color:white; border-radius:6px; display:none; flex-direction:column; min-width:140px;">
+          <a href="dashboard.html" style="padding:8px 12px; color:white; text-decoration:none;">Dashboard</a>
+          <a href="#" id="logoutBtn" style="padding:8px 12px; color:white; text-decoration:none;">Logout</a>
+        </div>
+      </div>
+    `;
+
+    const profilePic = document.getElementById("profile-pic");
+    const uploadInput = document.getElementById("uploadPic");
+    const dropdown = document.getElementById("profile-dropdown");
+
+    profilePic.addEventListener("click", ()=>uploadInput.click());
+    uploadInput.addEventListener("change", ()=> {
+      const file = uploadInput.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        localStorage.setItem("profileImage", e.target.result);
+        profilePic.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    profilePic.addEventListener("contextmenu", e=>{
+      e.preventDefault();
+      dropdown.style.display = dropdown.style.display==="flex"?"none":"flex";
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", ()=>{
+      localStorage.removeItem("user");
+      localStorage.removeItem("zpdaToken");
+      localStorage.removeItem("profileImage");
+      window.location.href="login.html";
+    });
+
+    document.addEventListener("click", e=>{
+      if(!authContainer.contains(e.target)) dropdown.style.display="none";
+    });
+  }
+
+  let userGenreChart, userLanguageChart, userPeriodChart;
+
+  async function loadMyPoems(){
+    try{
+      const res = await fetch("https://zpda-backend-1.onrender.com/my-poems", {
+        headers:{ 
+          "Authorization":"Bearer " + token,
+          "Cache-Control": "no-cache"
+        }
+      });
+
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+      
+    } catch(err){
+      console.error(err);
+      return [];
+    }
+  }
+
+  function countBy(array,key){
+    const counts={};
+    array.forEach(item=>{
+      const value = item[key] || "Other";
+      counts[value] = (counts[value]||0)+1;
+    });
+    return counts;
+  }
+
+  async function updateUserStats(){
+    if(isEditing) return; // ✅ STOP REFRESH DURING EDIT
+
+    const myPoems = await loadMyPoems();
+    document.getElementById("totalPoems").innerText = "Total Poems Submitted: " + myPoems.length;
+
+    const tbody = document.getElementById("poemsBody");
+    tbody.innerHTML = "";
+
+    myPoems.forEach(p=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${p.title}</td>
+        <td>${p.genre || ""}</td>
+        <td>${p.language || ""}</td>
+        <td>${p.period || ""}</td>
+        <td>❤️ <span class="like-count">${p.likes||0}</span></td>
+        <td>
+          <button class="btn read-btn">Read</button>
+          <button class="btn edit-btn">Edit</button>
+          <button class="btn save-btn" style="display:none;">Save</button>
+          <button class="btn delete-btn">Delete</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      tr.querySelector(".read-btn").addEventListener("click", ()=>readPoem(p.title, p.text));
+
+      const editRow = document.createElement("tr");
+      editRow.style.display = "none";
+      editRow.innerHTML = `
+        <td colspan="6">
+          <textarea class="edit-text" style="width:100%; height:120px; border-radius:8px; padding:10px;">${p.text || ""}</textarea>
+        </td>
+      `;
+      tbody.appendChild(editRow);
+
+      const editBtn = tr.querySelector(".edit-btn");
+      const saveBtn = tr.querySelector(".save-btn");
+      const deleteBtn = tr.querySelector(".delete-btn");
+
+      editBtn.onclick = () => {
+        isEditing = true; // ✅ LOCK REFRESH
+        editRow.style.display = "table-row";
+        editBtn.style.display = "none";
+        saveBtn.style.display = "inline-block";
+      };
+
+      saveBtn.onclick = async () => {
+        const newText = editRow.querySelector(".edit-text").value;
+
+        if(!newText.trim()){
+          alert("Poem cannot be empty");
+          return;
+        }
+
+        try{
+          await fetch(`https://zpda-backend-1.onrender.com/poems/${p._id}`,{
+            method:"PUT",
+            headers:{
+              "Content-Type":"application/json",
+              "Authorization":"Bearer " + token
+            },
+            body: JSON.stringify({ text:newText })
+          });
+
+          alert("Poem updated!");
+
+          editRow.style.display = "none";
+          editBtn.style.display = "inline-block";
+          saveBtn.style.display = "none";
+
+          isEditing = false; // ✅ UNLOCK
+          updateUserStats();
+
+        }catch(err){
+          console.error(err);
+        }
+      };
+
+      deleteBtn.onclick = async () => {
+        if(!confirm("Delete this poem permanently?")) return;
+
+        try{
+          await fetch(`https://zpda-backend-1.onrender.com/poems/${p._id}`,{
+            method:"DELETE",
+            headers:{
+              "Authorization":"Bearer " + token
+            }
+          });
+
+          alert("Deleted!");
+          updateUserStats();
+
+        }catch(err){
+          console.error(err);
+        }
+      };
+
+    });
+
+    const genreCounts = countBy(myPoems,"genre");
+    const langCounts = countBy(myPoems,"language");
+    const periodCounts = countBy(myPoems,"period");
+
+    if(userGenreChart) userGenreChart.destroy();
+    if(userLanguageChart) userLanguageChart.destroy();
+    if(userPeriodChart) userPeriodChart.destroy();
+
+    userGenreChart = new Chart(document.getElementById("userGenreChart"),{
+      type:"pie",
+      data:{ labels:Object.keys(genreCounts), datasets:[{ data:Object.values(genreCounts), backgroundColor:['#facc15','#5c9ded','#e43f5a','#38bdf8','#c084fc'] }] }
+    });
+
+    userLanguageChart = new Chart(document.getElementById("userLanguageChart"),{
+      type:"pie",
+      data:{ labels:Object.keys(langCounts), datasets:[{ data:Object.values(langCounts), backgroundColor:['#facc15','#5c9ded','#e43f5a','#38bdf8','#c084fc'] }] }
+    });
+
+    userPeriodChart = new Chart(document.getElementById("userPeriodChart"),{
+      type:"pie",
+      data:{ labels:Object.keys(periodCounts), datasets:[{ data:Object.values(periodCounts), backgroundColor:['#facc15','#5c9ded','#e43f5a','#38bdf8','#c084fc'] }] }
+    });
+  }
+
+  const readModal = document.getElementById("poemModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalText = document.getElementById("modalText");
+  const readModalClose = document.querySelector("#poemModal .modal-close");
+
+  window.readPoem = function(title,text){
+    modalTitle.innerText = title;
+    modalText.innerText = text;
+    readModal.style.display="block";
+  }
+
+  readModalClose.onclick = ()=> readModal.style.display="none";
+  window.onclick = e => { if(e.target === readModal) readModal.style.display="none"; }
+
+  updateUserStats();
+  setInterval(updateUserStats, 5000);
+
+});
+</script>
+<footer style="text-align:center; padding:20px; background:#0f172a; color:white; margin-top:40px;">
+<p>The Zimbabwean Poetry Digital Archive is an open-access Digital Humanities platform developed to support the study and preservation of Zimbabwean poetry.</p>
+</footer>
+
+</body>
+</html>
