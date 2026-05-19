@@ -271,9 +271,7 @@ let allPapers = [];
 async function fetchResearch(){
   try {
     const token = localStorage.getItem("adminToken") || localStorage.getItem("userToken");
-    const res = await fetch("https://zpda-backend-1.onrender.com/research-papers", {
-      headers: token ? { "Authorization": "Bearer "+token } : {}
-    });
+    const res = await fetch("https://zpda-backend-1.onrender.com/research-papers");
 
     const papers = await res.json();
 
