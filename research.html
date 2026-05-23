@@ -221,152 +221,247 @@ h2 {
 
 <script>
 
-const authContainer = document.getElementById("auth-container");
-const user = JSON.parse(localStorage.getItem("user"));
+// ===== AUTH AREA =====
+
+const authContainer =
+document.getElementById(
+"auth-container"
+);
+
+const user =
+JSON.parse(
+localStorage.getItem(
+"user"
+)
+);
 
 if(user){
-    authContainer.innerHTML =
-    `<a href="dashboard.html" class="hero-btn">Dashboard</a>`;
-}else{
-    authContainer.innerHTML =
-    `<button id="dashboard-btn" class="hero-btn">Dashboard</button>`;
 
-    document
-    .getElementById("dashboard-btn")
-    .addEventListener("click",()=>{
-        window.location.href="login.html";
-    });
+authContainer.innerHTML=
+`<a href="dashboard.html"
+class="hero-btn">
+Dashboard
+</a>`;
+
+}else{
+
+authContainer.innerHTML=
+`<button
+id="dashboard-btn"
+class="hero-btn">
+Dashboard
+</button>`;
+
+document
+.getElementById(
+"dashboard-btn"
+)
+.onclick=()=>{
+
+window.location.href=
+"login.html";
+
+};
+
 }
 
-const grid=document.getElementById("researchGrid");
+
+
+// ===== ELEMENTS =====
+
+const grid =
+document.getElementById(
+"researchGrid"
+);
+
+const searchInput =
+document.getElementById(
+"searchInput"
+);
 
 let allPapers=[];
 
+
+
+// ===== LOAD PAPERS =====
+
 async function fetchResearch(){
 
-    try{
+try{
 
-        grid.innerHTML=
-        `<p style="text-align:center">
-        Loading research papers...
-        </p>`;
+grid.innerHTML=
+`
+<p style="
+text-align:center;
+">
+Loading research papers...
+</p>
+`;
 
-        // PUBLIC ACCESS (NO TOKEN REQUIRED)
-        const res=await fetch(
-        "https://zpda-backend-1.onrender.com/research-papers"
-        );
+const response=
+await fetch(
+"https://zpda-backend-1.onrender.com/research-papers"
+);
 
-        if(!res.ok){
-            throw new Error("Server error");
-        }
+if(!response.ok){
 
-        const papers=await res.json();
-
-        // Ensure safe values
-        allPapers=papers.map(p=>({
-
-            title:p.title || "Untitled",
-
-            authors:p.authors || "Unknown Author",
-
-            year:p.year || "N/A",
-
-            abstract:p.abstract ||
-            "No abstract available.",
-
-            keywords:Array.isArray(p.keywords)
-            ? p.keywords
-            : [],
-
-            fileUrl:
-            p.fileUrl?.startsWith("http")
-            ? p.fileUrl
-            : `https://zpda-backend-1.onrender.com/${p.fileUrl}`
-
-        }));
-
-        renderPapers(allPapers);
-
-    }
-    catch(err){
-
-        console.log(err);
-
-        grid.innerHTML=
-        `<p style="
-        color:#f87171;
-        text-align:center;
-        ">
-        Failed to load research papers
-        </p>`;
-
-    }
+throw new Error(
+"Failed to fetch"
+);
 
 }
 
-function renderPapers(papers){
+const papers=
+await response.json();
+
+allPapers=
+papers.map(p=>({
+
+title:
+p.title ||
+"Untitled",
+
+authors:
+p.authors ||
+"Unknown Author",
+
+year:
+p.year ||
+"N/A",
+
+abstract:
+p.abstract ||
+"No abstract available",
+
+keywords:
+Array.isArray(
+p.keywords
+)
+?
+p.keywords
+:
+[],
+
+fileUrl:
+p.fileUrl?.startsWith(
+"http"
+)
+?
+p.fileUrl
+:
+`https://zpda-backend-1.onrender.com/${p.fileUrl}`
+
+}));
+
+renderPapers(
+allPapers
+);
+
+}
+catch(error){
+
+console.log(
+error
+);
+
+grid.innerHTML=
+`
+<p style="
+color:#f87171;
+text-align:center;
+">
+Failed to load research papers
+</p>
+`;
+
+}
+
+}
+
+fetchResearch();
+
+
+
+// ===== RENDER =====
+
+function renderPapers(list){
 
 grid.innerHTML="";
 
-if(papers.length===0){
+if(list.length===0){
 
 grid.innerHTML=
-`<p style="text-align:center">
+`
+<p style="
+text-align:center;
+">
 No research papers found
-</p>`;
+</p>
+`;
 
 return;
 
 }
 
-papers.forEach(p=>{
+list.forEach(p=>{
 
-const div=document.createElement("div");
+const card=
+document.createElement(
+"div"
+);
 
-div.className="card";
+card.className=
+"card";
 
-const researchLink=window.location.href;
+card.innerHTML=
+`
 
-const shareText=`
-📄 ${p.title}
+<h3>
 
-👤 ${p.authors}
+${p.title}
 
-📅 ${p.year}
+</h3>
 
-Read full paper:
-${p.fileUrl}
+<p class="category">
 
-Explore more research on ZPDA:
+<strong>
+Authors:
+</strong>
 
-${researchLink}
-`;
-
-div.innerHTML=`
-
-<h3>${p.title}</h3>
-
-<p>
-<strong>Authors:</strong>
 ${p.authors}
+
 </p>
 
-<p>
-<strong>Year:</strong>
+<p class="category">
+
+<strong>
+Year:
+</strong>
+
 ${p.year}
+
 </p>
 
 <div class="abstract">
+
 ${p.abstract}
+
 </div>
 
 <span class="read-more">
+
 Read more
+
 </span>
 
-<p>
-<strong>Keywords:</strong>
+<p class="category">
+
+<strong>
+Keywords:
+</strong>
+
 ${p.keywords.join(", ")}
+
 </p>
 
 <div class="actions">
@@ -374,90 +469,151 @@ ${p.keywords.join(", ")}
 <a
 href="${p.fileUrl}"
 target="_blank"
-class="btn-download"
+class="icon-btn"
+title="Open PDF"
 >
-View / Download PDF
+
+<i class="fa-solid fa-file-pdf"></i>
+
 </a>
 
 <button
 class="icon-btn share"
 title="Share"
 >
-<i class="fa-solid fa-share"></i>
+
+<i class="fa-solid fa-share-nodes"></i>
+
 </button>
 
 </div>
 
 `;
 
-const readBtn=
-div.querySelector(".read-more");
 
-readBtn.onclick=()=>{
+// ===== READ MORE =====
 
-const abs=
-div.querySelector(".abstract");
-
-abs.classList.toggle(
-"expanded"
+const abstract=
+card.querySelector(
+".abstract"
 );
 
-readBtn.textContent=
-abs.classList.contains(
-"expanded"
-)
-?
-"Read less"
-:
+const readBtn=
+card.querySelector(
+".read-more"
+);
+
+readBtn.onclick=
+()=>{
+
+if(
+abstract.style.maxHeight
+==="none"
+){
+
+abstract.style.maxHeight=
+"80px";
+
+readBtn.innerText=
 "Read more";
+
+}
+else{
+
+abstract.style.maxHeight=
+"none";
+
+readBtn.innerText=
+"Read less";
+
+}
 
 };
 
-div.querySelector(".share")
+
+// ===== SHARE =====
+
+card.querySelector(
+".share"
+)
 .onclick=()=>{
 
-if(navigator.share){
+const currentLink=
+window.location.href;
+
+const shareText=
+`${p.title}
+
+Authors:
+${p.authors}
+
+Year:
+${p.year}
+
+Read here:
+
+${p.fileUrl}
+
+Explore more:
+
+${currentLink}
+`;
+
+if(
+navigator.share
+){
 
 navigator.share({
 
 title:p.title,
-text:shareText
+
+text:shareText,
+
+url:currentLink
 
 });
 
-}else{
+}
+else{
 
 navigator.clipboard
 .writeText(
 shareText
 );
 
-alert("Copied!");
+alert(
+"Copied!"
+);
 
 }
 
 };
 
-grid.appendChild(div);
+grid.appendChild(
+card
+);
 
 });
 
 }
 
-document
-.getElementById(
-"searchInput"
-)
+
+
+// ===== SEARCH =====
+
+searchInput
 .addEventListener(
 "input",
-e=>{
+()=>{
 
 const term=
-e.target.value
+searchInput
+.value
 .toLowerCase();
 
 const filtered=
-allPapers.filter(p=>
+allPapers.filter(
+p=>
 
 p.title
 .toLowerCase()
@@ -466,6 +622,12 @@ p.title
 ||
 
 p.authors
+.toLowerCase()
+.includes(term)
+
+||
+
+p.abstract
 .toLowerCase()
 .includes(term)
 
@@ -485,9 +647,6 @@ filtered
 }
 );
 
-fetchResearch();
-
 </script>
-
 </body>
 </html>
