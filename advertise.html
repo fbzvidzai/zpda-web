@@ -182,7 +182,7 @@ footer {
 
 <script>
 // ===== USSD GENERATION =====
-document.getElementById("generate-ussd").addEventListener("click",()=>{
+document.getElementById("generate-ussd").addEventListener("click", () => {
   const duration = document.getElementById("duration").value;
   const amount = parseInt(duration);
   const ecoNumber = "0773674062";
@@ -190,20 +190,22 @@ document.getElementById("generate-ussd").addEventListener("click",()=>{
 
   const ussdDiv = document.getElementById("ussd-code");
   ussdDiv.style.display = "block";
-  ussdDiv.textContent = `Dial this USSD on your phone to pay Ecocash: ${ussd}\nAfter payment, enter your name, phone, and approval code in the form.`;
+  ussdDiv.textContent = `Dial this USSD on your phone to pay Ecocash: ${ussd}
+After payment, enter your name, phone, and approval code in the form.`;
 });
 
+
 // ===== IMAGE COMPRESSION =====
-function compressImage(file){
-  return new Promise((resolve)=>{
+function compressImage(file) {
+  return new Promise((resolve) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
 
-    reader.onload = (event)=>{
+    reader.onload = (event) => {
       const img = new Image();
       img.src = event.target.result;
 
-      img.onload = ()=>{
+      img.onload = () => {
         const canvas = document.createElement("canvas");
         const maxWidth = 800;
         const scaleSize = maxWidth / img.width;
@@ -221,38 +223,54 @@ function compressImage(file){
   });
 }
 
+
+// ===== LINK CLICKING FUNCTION =====
+function escapeHTML(str) {
+  return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function linkify(text) {
+  return text.replace(
+    /(https?:\/\/[^\s]+)/g,
+    '<a href="$1" target="_blank">$1</a>'
+  );
+}
+
+
 // ===== AD FORM SUBMISSION =====
 const adForm = document.getElementById("adForm");
 
-adForm.addEventListener("submit", async (e)=>{
+adForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const text = document.getElementById("adText").value.trim();
+  let text = document.getElementById("adText").value.trim();
   const imageFile = document.getElementById("adImage").files[0];
-  const url = document.getElementById("adUrl").value.trim(); // ✅ ADDED
   const duration = document.getElementById("duration").value;
   const name = document.getElementById("name").value.trim();
   const phone = document.getElementById("phone").value.trim();
   const approvalCode = document.getElementById("approvalCode").value.trim();
 
-  if(!text || !name || !phone || !approvalCode){
+  if (!text || !name || !phone || !approvalCode) {
     return alert("Please fill all required fields.");
   }
 
+  // 🔥 MAKE LINKS CLICKABLE (before sending or displaying)
+  const safeText = escapeHTML(text);
+  const formattedText = linkify(safeText);
+
   let imageData = null;
 
-  if(imageFile){
+  if (imageFile) {
     imageData = await compressImage(imageFile);
   }
 
-  try{
+  try {
     const res = await fetch("https://zpda-backend-1.onrender.com/ads", {
       method: "POST",
-      headers: { "Content-Type":"application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        text: text,
+        text: formattedText,   // ✅ SEND FORMATTED TEXT
         image: imageData,
-        url: url, // ✅ ADDED ONLY
         duration: duration,
         name: name,
         phone: phone,
@@ -262,7 +280,7 @@ adForm.addEventListener("submit", async (e)=>{
 
     const data = await res.json();
 
-    if(res.ok){
+    if (res.ok) {
       alert("✅ Advertisement submitted successfully! Await admin approval.");
       adForm.reset();
       document.getElementById("ussd-code").style.display = "none";
@@ -271,7 +289,7 @@ adForm.addEventListener("submit", async (e)=>{
       alert(data.error || "❌ Failed to submit advertisement");
     }
 
-  }catch(err){
+  } catch (err) {
     console.error(err);
     alert("❌ Server error. Make sure backend is running.");
   }
