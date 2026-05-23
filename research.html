@@ -147,12 +147,9 @@ h2 {
 /* ===== META ===== */
 .metadata { font-size:11px; color:#94a3b8; margin-top:6px; }
 
-/* =========================
-   MOBILE FIX (MATCH INDEX STYLE)
-========================= */
+/* ===== MOBILE FIX ONLY ===== */
 @media (max-width: 768px) {
 
-  /* NAVBAR */
   .main-header {
     flex-direction: column;
     align-items: flex-start;
@@ -163,61 +160,30 @@ h2 {
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 10px;
-    width: 100%;
   }
 
   .nav-bar a {
     font-size: 0.9em;
   }
 
-  /* TITLE */
-  h2 {
-    font-size: 1.4em;
-    text-align: center;
+  .hero-about {
+    padding: 60px 15px;
   }
 
-  /* SEARCH */
-  .filter input {
-    width: 100%;
-    max-width: 100%;
+  .hero-about h1 {
+    font-size: 26px;
   }
 
-  /* GRID → SINGLE COLUMN (IMPORTANT FIX) */
-  .grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
+  .hero-about p {
+    font-size: 15px;
   }
 
-  /* CARDS */
-  .card {
-    padding: 15px;
-  }
-
-  .card h3 {
-    font-size: 1em;
-  }
-
-  .card p {
-    font-size: 12px;
-  }
-
-  /* ABSTRACT */
-  .abstract {
-    font-size: 12px;
-  }
-
-  /* BUTTONS */
-  .btn-download {
-    width: 100%;
-    text-align: center;
-  }
-
-  .actions {
-    flex-direction: column;
-    align-items: stretch;
+  .container {
+    margin: 20px auto;
   }
 
 }
+
 
 </style>
 </head>
@@ -270,16 +236,12 @@ let allPapers = [];
 
 async function fetchResearch(){
   try {
-    const token = localStorage.getItem("adminToken") || localStorage.getItem("userToken");
-    const res = await fetch("https://zpda-backend-1.onrender.com/research-papers");
+
+    const res = await fetch("https://zpda-backend-1.onrender.com/research-papers", {
+      headers: token ? { "Authorization": "Bearer "+token } : {}
+    });
 
     const papers = await res.json();
-
-    papers.forEach(p=>{
-      if(!p.fileUrl.startsWith("http")){
-        p.fileUrl = "https://zpda-backend-1.onrender.com/" + p.fileUrl;
-      }
-    });
 
     allPapers = papers;
     renderPapers(papers);
@@ -364,4 +326,4 @@ document.getElementById("searchInput").addEventListener("input",e=>{
 </script>
 
 </body>
-</html> give me a working research.html that will be accessed by public
+</html>
