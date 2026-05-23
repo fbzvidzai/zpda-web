@@ -225,103 +225,267 @@ const authContainer = document.getElementById("auth-container");
 const user = JSON.parse(localStorage.getItem("user"));
 
 if(user){
-  authContainer.innerHTML = `<a href="dashboard.html" class="hero-btn">Dashboard</a>`;
-} else {
-  authContainer.innerHTML = `<button id="dashboard-btn" class="hero-btn">Dashboard</button>`;
-  document.getElementById("dashboard-btn").addEventListener("click",()=>window.location.href="login.html");
+    authContainer.innerHTML =
+    `<a href="dashboard.html" class="hero-btn">Dashboard</a>`;
+}else{
+    authContainer.innerHTML =
+    `<button id="dashboard-btn" class="hero-btn">Dashboard</button>`;
+
+    document
+    .getElementById("dashboard-btn")
+    .addEventListener("click",()=>{
+        window.location.href="login.html";
+    });
 }
 
-const grid = document.getElementById("researchGrid");
-let allPapers = [];
+const grid=document.getElementById("researchGrid");
+
+let allPapers=[];
 
 async function fetchResearch(){
-  try {
 
-    const res = await fetch("https://zpda-backend-1.onrender.com/research-papers", {
-      headers: token ? { "Authorization": "Bearer "+token } : {}
-    });
+    try{
 
-    const papers = await res.json();
+        grid.innerHTML=
+        `<p style="text-align:center">
+        Loading research papers...
+        </p>`;
 
-    allPapers = papers;
-    renderPapers(papers);
+        // PUBLIC ACCESS (NO TOKEN REQUIRED)
+        const res=await fetch(
+        "https://zpda-backend-1.onrender.com/research-papers"
+        );
 
-  } catch(err){
-    console.error(err);
-    grid.innerHTML = "<p style='color:#f87171;text-align:center;'>Failed to load research papers</p>";
-  }
+        if(!res.ok){
+            throw new Error("Server error");
+        }
+
+        const papers=await res.json();
+
+        // Ensure safe values
+        allPapers=papers.map(p=>({
+
+            title:p.title || "Untitled",
+
+            authors:p.authors || "Unknown Author",
+
+            year:p.year || "N/A",
+
+            abstract:p.abstract ||
+            "No abstract available.",
+
+            keywords:Array.isArray(p.keywords)
+            ? p.keywords
+            : [],
+
+            fileUrl:
+            p.fileUrl?.startsWith("http")
+            ? p.fileUrl
+            : `https://zpda-backend-1.onrender.com/${p.fileUrl}`
+
+        }));
+
+        renderPapers(allPapers);
+
+    }
+    catch(err){
+
+        console.log(err);
+
+        grid.innerHTML=
+        `<p style="
+        color:#f87171;
+        text-align:center;
+        ">
+        Failed to load research papers
+        </p>`;
+
+    }
+
 }
 
 function renderPapers(papers){
-  grid.innerHTML = "";
 
-  papers.forEach(p=>{
-    const div = document.createElement("div");
+grid.innerHTML="";
 
-    div.className = "card";
+if(papers.length===0){
 
-    // ✅ DYNAMIC RESEARCH PAGE LINK
-    const researchLink = window.location.href;
+grid.innerHTML=
+`<p style="text-align:center">
+No research papers found
+</p>`;
 
-    const shareText =
-`📄 ${p.title}
+return;
+
+}
+
+papers.forEach(p=>{
+
+const div=document.createElement("div");
+
+div.className="card";
+
+const researchLink=window.location.href;
+
+const shareText=`
+📄 ${p.title}
+
 👤 ${p.authors}
+
 📅 ${p.year}
 
 Read full paper:
 ${p.fileUrl}
 
 Explore more research on ZPDA:
-${researchLink}`;
 
-    div.innerHTML = `
-      <h3>${p.title}</h3>
-      <p><strong>Authors:</strong> ${p.authors}</p>
-      <p><strong>Year:</strong> ${p.year}</p>
+${researchLink}
+`;
 
-      <div class="abstract">${p.abstract}</div>
-      <span class="read-more">Read more</span>
+div.innerHTML=`
 
-      <p><strong>Keywords:</strong> ${p.keywords.join(", ")}</p>
+<h3>${p.title}</h3>
 
-      <div class="actions">
-        <a href="${p.fileUrl}" target="_blank" class="btn-download">View / Download PDF</a>
-        <button class="icon-btn share" title="Share"><i class="fa-solid fa-share"></i></button>
-      </div>
-    `;
+<p>
+<strong>Authors:</strong>
+${p.authors}
+</p>
 
-    div.querySelector(".read-more").onclick = ()=>{
-      const abs = div.querySelector(".abstract");
-      abs.classList.toggle("expanded");
-    };
+<p>
+<strong>Year:</strong>
+${p.year}
+</p>
 
-    div.querySelector(".share").onclick = ()=>{
-      if(navigator.share){
-        navigator.share({
-          title: p.title,
-          text: shareText
-        });
-      } else {
-        navigator.clipboard.writeText(shareText);
-        alert("Copied!");
-      }
-    };
+<div class="abstract">
+${p.abstract}
+</div>
 
-    grid.appendChild(div);
-  });
+<span class="read-more">
+Read more
+</span>
+
+<p>
+<strong>Keywords:</strong>
+${p.keywords.join(", ")}
+</p>
+
+<div class="actions">
+
+<a
+href="${p.fileUrl}"
+target="_blank"
+class="btn-download"
+>
+View / Download PDF
+</a>
+
+<button
+class="icon-btn share"
+title="Share"
+>
+<i class="fa-solid fa-share"></i>
+</button>
+
+</div>
+
+`;
+
+const readBtn=
+div.querySelector(".read-more");
+
+readBtn.onclick=()=>{
+
+const abs=
+div.querySelector(".abstract");
+
+abs.classList.toggle(
+"expanded"
+);
+
+readBtn.textContent=
+abs.classList.contains(
+"expanded"
+)
+?
+"Read less"
+:
+"Read more";
+
+};
+
+div.querySelector(".share")
+.onclick=()=>{
+
+if(navigator.share){
+
+navigator.share({
+
+title:p.title,
+text:shareText
+
+});
+
+}else{
+
+navigator.clipboard
+.writeText(
+shareText
+);
+
+alert("Copied!");
+
 }
 
-fetchResearch();
+};
 
-document.getElementById("searchInput").addEventListener("input",e=>{
-  const term = e.target.value.toLowerCase();
-  const filtered = allPapers.filter(p =>
-    p.title.toLowerCase().includes(term) ||
-    p.authors.toLowerCase().includes(term) ||
-    p.keywords.some(k => k.toLowerCase().includes(term))
-  );
-  renderPapers(filtered);
+grid.appendChild(div);
+
 });
+
+}
+
+document
+.getElementById(
+"searchInput"
+)
+.addEventListener(
+"input",
+e=>{
+
+const term=
+e.target.value
+.toLowerCase();
+
+const filtered=
+allPapers.filter(p=>
+
+p.title
+.toLowerCase()
+.includes(term)
+
+||
+
+p.authors
+.toLowerCase()
+.includes(term)
+
+||
+
+p.keywords
+.join(" ")
+.toLowerCase()
+.includes(term)
+
+);
+
+renderPapers(
+filtered
+);
+
+}
+);
+
+fetchResearch();
 
 </script>
 
