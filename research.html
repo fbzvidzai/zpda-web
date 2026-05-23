@@ -224,20 +224,14 @@ h2 {
 // ===== AUTH AREA =====
 
 const authContainer =
-document.getElementById(
-"auth-container"
-);
+document.getElementById("auth-container");
 
 const user =
-JSON.parse(
-localStorage.getItem(
-"user"
-)
-);
+JSON.parse(localStorage.getItem("user"));
 
 if(user){
 
-authContainer.innerHTML=
+authContainer.innerHTML =
 `<a href="dashboard.html"
 class="hero-btn">
 Dashboard
@@ -245,7 +239,7 @@ Dashboard
 
 }else{
 
-authContainer.innerHTML=
+authContainer.innerHTML =
 `<button
 id="dashboard-btn"
 class="hero-btn">
@@ -253,13 +247,10 @@ Dashboard
 </button>`;
 
 document
-.getElementById(
-"dashboard-btn"
-)
+.getElementById("dashboard-btn")
 .onclick=()=>{
 
-window.location.href=
-"login.html";
+window.location.href="login.html";
 
 };
 
@@ -283,7 +274,7 @@ let allPapers=[];
 
 
 
-// ===== LOAD PAPERS =====
+// ===== FETCH RESEARCH =====
 
 async function fetchResearch(){
 
@@ -293,6 +284,7 @@ grid.innerHTML=
 `
 <p style="
 text-align:center;
+padding:20px;
 ">
 Loading research papers...
 </p>
@@ -306,13 +298,18 @@ await fetch(
 if(!response.ok){
 
 throw new Error(
-"Failed to fetch"
+`Server returned ${response.status}`
 );
 
 }
 
 const papers=
 await response.json();
+
+console.log(
+"Research papers:",
+papers
+);
 
 allPapers=
 papers.map(p=>({
@@ -343,13 +340,17 @@ p.keywords
 [],
 
 fileUrl:
-p.fileUrl?.startsWith(
-"http"
-)
+p.fileUrl
+?
+(
+p.fileUrl.startsWith("http")
 ?
 p.fileUrl
 :
 `https://zpda-backend-1.onrender.com/${p.fileUrl}`
+)
+:
+"#"
 
 }));
 
@@ -361,6 +362,7 @@ allPapers
 catch(error){
 
 console.log(
+"Research loading error:",
 error
 );
 
@@ -369,8 +371,13 @@ grid.innerHTML=
 <p style="
 color:#f87171;
 text-align:center;
+padding:20px;
 ">
 Failed to load research papers
+
+<br><br>
+
+${error.message}
 </p>
 `;
 
@@ -394,8 +401,9 @@ grid.innerHTML=
 `
 <p style="
 text-align:center;
+padding:20px;
 ">
-No research papers found
+No research papers available
 </p>
 `;
 
@@ -417,13 +425,10 @@ card.innerHTML=
 `
 
 <h3>
-
 ${p.title}
-
 </h3>
 
-<p class="category">
-
+<p>
 <strong>
 Authors:
 </strong>
@@ -432,8 +437,7 @@ ${p.authors}
 
 </p>
 
-<p class="category">
-
+<p>
 <strong>
 Year:
 </strong>
@@ -454,7 +458,7 @@ Read more
 
 </span>
 
-<p class="category">
+<p>
 
 <strong>
 Keywords:
@@ -469,20 +473,18 @@ ${p.keywords.join(", ")}
 <a
 href="${p.fileUrl}"
 target="_blank"
-class="icon-btn"
-title="Open PDF"
+class="btn-download"
 >
 
-<i class="fa-solid fa-file-pdf"></i>
+Open PDF
 
 </a>
 
 <button
 class="icon-btn share"
-title="Share"
 >
 
-<i class="fa-solid fa-share-nodes"></i>
+<i class="fa-solid fa-share"></i>
 
 </button>
 
@@ -503,30 +505,25 @@ card.querySelector(
 ".read-more"
 );
 
-readBtn.onclick=
-()=>{
+readBtn.onclick=()=>{
 
-if(
-abstract.style.maxHeight
-==="none"
-){
-
-abstract.style.maxHeight=
-"80px";
+abstract.classList.toggle(
+"expanded"
+);
 
 readBtn.innerText=
+
+abstract.classList.contains(
+"expanded"
+)
+
+?
+
+"Read less"
+
+:
+
 "Read more";
-
-}
-else{
-
-abstract.style.maxHeight=
-"none";
-
-readBtn.innerText=
-"Read less";
-
-}
 
 };
 
@@ -538,10 +535,8 @@ card.querySelector(
 )
 .onclick=()=>{
 
-const currentLink=
-window.location.href;
-
 const shareText=
+
 `${p.title}
 
 Authors:
@@ -550,14 +545,9 @@ ${p.authors}
 Year:
 ${p.year}
 
-Read here:
+Read paper:
 
-${p.fileUrl}
-
-Explore more:
-
-${currentLink}
-`;
+${p.fileUrl}`;
 
 if(
 navigator.share
@@ -569,7 +559,7 @@ title:p.title,
 
 text:shareText,
 
-url:currentLink
+url:p.fileUrl
 
 });
 
