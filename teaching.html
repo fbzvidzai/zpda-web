@@ -201,148 +201,447 @@ h2 { text-align:center; margin-bottom:20px; color:white; font-size:1.8em; }
 <script>
 
 // ===== AUTH AREA =====
-const authContainer = document.getElementById("auth-container");
-const user = JSON.parse(localStorage.getItem("user"));
+
+const authContainer =
+document.getElementById(
+"auth-container"
+);
+
+const user =
+JSON.parse(
+localStorage.getItem(
+"user"
+)
+);
 
 if(user){
-  authContainer.innerHTML = `<a href="dashboard.html" class="hero-btn">Dashboard</a>`;
-} else {
-  authContainer.innerHTML = `<button id="dashboard-btn" class="hero-btn">Dashboard</button>`;
-  document.getElementById("dashboard-btn").onclick = ()=>window.location.href="login.html";
+
+authContainer.innerHTML=
+`<a href="dashboard.html"
+class="hero-btn">
+Dashboard
+</a>`;
+
+}else{
+
+authContainer.innerHTML=
+`<button
+id="dashboard-btn"
+class="hero-btn">
+Dashboard
+</button>`;
+
+document
+.getElementById(
+"dashboard-btn"
+)
+.onclick=()=>{
+
+window.location.href=
+"login.html";
+
+};
+
 }
 
+
+
 // ===== ELEMENTS =====
-const resourcesGrid = document.getElementById("resourcesGrid");
-const searchInput = document.getElementById("searchInput");
-const tabs = document.querySelectorAll(".tab");
 
-let allResources = [];
-let currentCategory = "All";
+const resourcesGrid=
+document.getElementById(
+"resourcesGrid"
+);
 
-// ===== LOAD FROM BACKEND =====
+const searchInput=
+document.getElementById(
+"searchInput"
+);
+
+const tabs=
+document.querySelectorAll(
+".tab"
+);
+
+let allResources=[];
+
+let currentCategory=
+"All";
+
+
+
+// ===== LOAD RESOURCES =====
+
 async function loadResources(){
-  try{
-    const res = await fetch("https://zpda-backend-1.onrender.com/teaching-resources");
-    allResources = await res.json();
-    renderResources(allResources);
-  }catch(err){
-    console.error("Failed to load resources:", err);
-    resourcesGrid.innerHTML = "<p>Failed to load resources.</p>";
-  }
+
+try{
+
+resourcesGrid.innerHTML=
+`<p style="
+text-align:center;
+">
+Loading resources...
+</p>`;
+
+const response=
+await fetch(
+"https://zpda-backend-1.onrender.com/teaching-resources"
+);
+
+if(!response.ok){
+
+throw new Error(
+"Failed to fetch"
+);
+
+}
+
+const resources=
+await response.json();
+
+allResources=
+resources.map(r=>({
+
+title:
+r.title ||
+"Untitled",
+
+author:
+r.author ||
+"Unknown",
+
+subject:
+r.subject ||
+"General",
+
+description:
+r.description ||
+"No description available",
+
+fileUrl:
+r.fileUrl?.startsWith(
+"http"
+)
+?
+r.fileUrl
+:
+`https://zpda-backend-1.onrender.com/${r.fileUrl}`
+
+}));
+
+renderResources(
+allResources
+);
+
+}
+catch(error){
+
+console.log(
+error
+);
+
+resourcesGrid.innerHTML=
+`<p style="
+text-align:center;
+color:#f87171;
+">
+Failed to load resources
+</p>`;
+
+}
+
 }
 
 loadResources();
 
+
+
 // ===== RENDER =====
+
 function renderResources(list){
-  resourcesGrid.innerHTML = "";
 
-  if(!list || list.length === 0){
-    resourcesGrid.innerHTML = "<p>No teaching resources found.</p>";
-    return;
-  }
+resourcesGrid.innerHTML=
+"";
 
-  list.forEach(r=>{
-    const div = document.createElement("div");
-    div.className="card";
+if(list.length===0){
 
-    const abstract = r.description || "No description available";
+resourcesGrid.innerHTML=
+`<p style="
+text-align:center;
+">
+No resources found
+</p>`;
 
-    div.innerHTML = `
-      <h3>${r.title}</h3>
+return;
 
-      <p class="category">
-        <strong>Author:</strong> ${r.author || "Unknown"}
-      </p>
-
-      <p class="category">
-        <strong>Subject:</strong> ${r.subject || "General"}
-      </p>
-
-      <div class="abstract">${abstract}</div>
-      <span class="read-more">Read more</span>
-
-      <div class="actions">
-        <a href="${r.fileUrl}" target="_blank" class="icon-btn download">
-          <i class="fa-solid fa-download"></i>
-        </a>
-
-        <button class="icon-btn share">
-          <i class="fa-solid fa-share-nodes"></i>
-        </button>
-      </div>
-    `;
-
-    // READ MORE
-    const readBtn = div.querySelector(".read-more");
-    const abs = div.querySelector(".abstract");
-
-    readBtn.onclick = ()=>{
-      if(abs.style.maxHeight==="none"){
-        abs.style.maxHeight="80px";
-        readBtn.innerText="Read more";
-      } else {
-        abs.style.maxHeight="none";
-        readBtn.innerText="Read less";
-      }
-    };
-
-    // ✅ FIXED SHARE (dynamic current link at click time)
-    div.querySelector(".share").onclick = ()=>{
-      const currentLink = window.location.href;
-
-      const shareText = `${r.title} - ${abstract}
-
-View here:
-${currentLink}`;
-
-      if(navigator.share){
-        navigator.share({
-          title: r.title,
-          text: shareText,
-          url: currentLink
-        });
-      } else {
-        navigator.clipboard.writeText(shareText);
-        alert("Copied!");
-      }
-    };
-
-    resourcesGrid.appendChild(div);
-  });
 }
 
-// ===== FILTER =====
-tabs.forEach(tab=>{
-  tab.onclick = ()=>{
-    tabs.forEach(t=>t.classList.remove("active"));
-    tab.classList.add("active");
+list.forEach(r=>{
 
-    currentCategory = tab.dataset.category;
-    filterAndRender();
-  };
+const card=
+document.createElement(
+"div"
+);
+
+card.className=
+"card";
+
+card.innerHTML=
+`
+
+<h3>
+${r.title}
+</h3>
+
+<p class="category">
+
+<strong>
+Author:
+</strong>
+
+${r.author}
+
+</p>
+
+<p class="category">
+
+<strong>
+Subject:
+</strong>
+
+${r.subject}
+
+</p>
+
+<div class="abstract">
+
+${r.description}
+
+</div>
+
+<span class="read-more">
+
+Read more
+
+</span>
+
+<div class="actions">
+
+<a
+href="${r.fileUrl}"
+target="_blank"
+class="icon-btn"
+title="Open PDF"
+>
+
+<i class="fa-solid fa-file-pdf"></i>
+
+</a>
+
+<button
+class="icon-btn share"
+title="Share"
+>
+
+<i class="fa-solid fa-share-nodes"></i>
+
+</button>
+
+</div>
+
+`;
+
+
+// ===== READ MORE =====
+
+const abstract=
+card.querySelector(
+".abstract"
+);
+
+const readMore=
+card.querySelector(
+".read-more"
+);
+
+readMore.onclick=
+()=>{
+
+if(
+abstract.style.maxHeight
+==="none"
+){
+
+abstract.style.maxHeight=
+"80px";
+
+readMore.innerText=
+"Read more";
+
+}
+else{
+
+abstract.style.maxHeight=
+"none";
+
+readMore.innerText=
+"Read less";
+
+}
+
+};
+
+
+// ===== SHARE =====
+
+card.querySelector(
+".share"
+)
+.onclick=()=>{
+
+const currentLink=
+window.location.href;
+
+const shareText=
+`${r.title}
+
+${r.description}
+
+Open resource:
+
+${r.fileUrl}`;
+
+if(
+navigator.share
+){
+
+navigator.share({
+
+title:r.title,
+
+text:shareText,
+
+url:currentLink
+
 });
 
-searchInput.addEventListener("input", filterAndRender);
+}
+else{
+
+navigator.clipboard
+.writeText(
+shareText
+);
+
+alert(
+"Copied!"
+);
+
+}
+
+};
+
+resourcesGrid.appendChild(
+card
+);
+
+});
+
+}
+
+
+
+// ===== FILTER =====
+
+tabs.forEach(tab=>{
+
+tab.onclick=()=>{
+
+tabs.forEach(t=>{
+
+t.classList.remove(
+"active"
+);
+
+});
+
+tab.classList.add(
+"active"
+);
+
+currentCategory=
+tab.dataset.category;
+
+filterAndRender();
+
+};
+
+});
+
+
+searchInput
+.addEventListener(
+"input",
+filterAndRender
+);
+
 
 function filterAndRender(){
-  const term = searchInput.value.toLowerCase();
 
-  const filtered = allResources.filter(r=>{
-    const matchCategory =
-      currentCategory === "All" ||
-      r.subject === currentCategory;
+const term=
+searchInput.value
+.toLowerCase();
 
-    const matchSearch =
-      r.title?.toLowerCase().includes(term) ||
-      r.description?.toLowerCase().includes(term) ||
-      r.subject?.toLowerCase().includes(term) ||
-      r.author?.toLowerCase().includes(term);
+const filtered=
+allResources.filter(
+r=>{
 
-    return matchCategory && matchSearch;
-  });
+const matchCategory=
 
-  renderResources(filtered);
+currentCategory==="All"
+
+||
+
+r.subject===currentCategory;
+
+
+const matchSearch=
+
+r.title
+.toLowerCase()
+.includes(term)
+
+||
+
+r.description
+.toLowerCase()
+.includes(term)
+
+||
+
+r.author
+.toLowerCase()
+.includes(term)
+
+||
+
+r.subject
+.toLowerCase()
+.includes(term);
+
+
+return(
+matchCategory &&
+matchSearch
+);
+
+}
+);
+
+renderResources(
+filtered
+);
+
 }
 
 </script>
