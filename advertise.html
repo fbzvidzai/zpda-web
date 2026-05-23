@@ -181,121 +181,339 @@ footer {
 </div>
 
 <script>
-// ===== USSD GENERATION =====
-document.getElementById("generate-ussd").addEventListener("click", () => {
-  const duration = document.getElementById("duration").value;
-  const amount = parseInt(duration);
-  const ecoNumber = "0773674062";
-  const ussd = `*153*1*1*${ecoNumber}*${amount}#`;
 
-  const ussdDiv = document.getElementById("ussd-code");
-  ussdDiv.style.display = "block";
-  ussdDiv.textContent = `Dial this USSD on your phone to pay Ecocash: ${ussd}
-After payment, enter your name, phone, and approval code in the form.`;
+// ===== USSD GENERATION =====
+
+document.getElementById("generate-ussd")
+.addEventListener("click",()=>{
+
+const duration=
+parseInt(
+document.getElementById("duration").value
+);
+
+const ecoNumber="0773674062";
+
+const ussd=
+`*153*1*1*${ecoNumber}*${duration}#`;
+
+const ussdDiv=
+document.getElementById("ussd-code");
+
+ussdDiv.style.display="block";
+
+ussdDiv.innerHTML=`
+Dial this Ecocash code:
+
+<br><br>
+
+<strong>${ussd}</strong>
+
+<br><br>
+
+After payment enter your approval code below.
+`;
+
 });
+
 
 
 // ===== IMAGE COMPRESSION =====
-function compressImage(file) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
 
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target.result;
+async function compressImage(file){
 
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const maxWidth = 800;
-        const scaleSize = maxWidth / img.width;
+return new Promise((resolve,reject)=>{
 
-        canvas.width = maxWidth;
-        canvas.height = img.height * scaleSize;
+const reader=
+new FileReader();
 
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+reader.readAsDataURL(file);
 
-        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
-        resolve(compressedBase64);
-      };
-    };
-  });
+reader.onload=(e)=>{
+
+const img=
+new Image();
+
+img.src=e.target.result;
+
+img.onload=()=>{
+
+const canvas=
+document.createElement("canvas");
+
+const ctx=
+canvas.getContext("2d");
+
+const MAX_WIDTH=800;
+
+let width=img.width;
+let height=img.height;
+
+if(width>MAX_WIDTH){
+
+height=
+height*(MAX_WIDTH/width);
+
+width=MAX_WIDTH;
+
 }
 
+canvas.width=width;
+canvas.height=height;
 
-// ===== LINK CLICKING FUNCTION =====
-function escapeHTML(str) {
-  return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+ctx.drawImage(
+img,
+0,
+0,
+width,
+height
+);
 
-function linkify(text) {
-  return text.replace(
-    /(https?:\/\/[^\s]+)/g,
-    '<a href="$1" target="_blank">$1</a>'
-  );
-}
+const compressed=
+canvas.toDataURL(
+"image/jpeg",
+0.7
+);
 
+resolve(compressed);
 
-// ===== AD FORM SUBMISSION =====
-const adForm = document.getElementById("adForm");
+};
 
-adForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+img.onerror=()=>{
+reject("Image failed");
+};
 
-  let text = document.getElementById("adText").value.trim();
-  const imageFile = document.getElementById("adImage").files[0];
-  const duration = document.getElementById("duration").value;
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const approvalCode = document.getElementById("approvalCode").value.trim();
+};
 
-  if (!text || !name || !phone || !approvalCode) {
-    return alert("Please fill all required fields.");
-  }
+reader.onerror=()=>{
+reject("Reader failed");
+};
 
-  // 🔥 MAKE LINKS CLICKABLE (before sending or displaying)
-  const safeText = escapeHTML(text);
-  const formattedText = linkify(safeText);
-
-  let imageData = null;
-
-  if (imageFile) {
-    imageData = await compressImage(imageFile);
-  }
-
-  try {
-    const res = await fetch("https://zpda-backend-1.onrender.com/ads", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text: formattedText,   // ✅ SEND FORMATTED TEXT
-        image: imageData,
-        duration: duration,
-        name: name,
-        phone: phone,
-        approvalCode: approvalCode
-      })
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      alert("✅ Advertisement submitted successfully! Await admin approval.");
-      adForm.reset();
-      document.getElementById("ussd-code").style.display = "none";
-      window.location.href = "index.html";
-    } else {
-      alert(data.error || "❌ Failed to submit advertisement");
-    }
-
-  } catch (err) {
-    console.error(err);
-    alert("❌ Server error. Make sure backend is running.");
-  }
 });
-</script>
 
+}
+
+
+
+// ===== PROTECT HTML =====
+
+function escapeHTML(text){
+
+const div=
+document.createElement("div");
+
+div.innerText=text;
+
+return div.innerHTML;
+
+}
+
+
+
+// ===== MAKE LINKS CLICKABLE =====
+
+function linkify(text){
+
+return text.replace(
+/(https?:\/\/[^\s]+)/g,
+'<a href="$1" target="_blank">$1</a>'
+);
+
+}
+
+
+
+// ===== SUBMIT FORM =====
+
+const adForm=
+document.getElementById("adForm");
+
+adForm.addEventListener(
+"submit",
+async(e)=>{
+
+e.preventDefault();
+
+const submitBtn=
+adForm.querySelector(
+'button[type="submit"]'
+);
+
+submitBtn.disabled=true;
+
+submitBtn.innerText=
+"Submitting...";
+
+try{
+
+let text=
+document
+.getElementById("adText")
+.value
+.trim();
+
+const imageFile=
+document
+.getElementById("adImage")
+.files[0];
+
+const duration=
+document
+.getElementById("duration")
+.value;
+
+const name=
+document
+.getElementById("name")
+.value
+.trim();
+
+const phone=
+document
+.getElementById("phone")
+.value
+.trim();
+
+const approvalCode=
+document
+.getElementById("approvalCode")
+.value
+.trim();
+
+
+if(
+!text ||
+!name ||
+!phone ||
+!approvalCode
+){
+
+alert(
+"Please fill all required fields"
+);
+
+submitBtn.disabled=false;
+
+submitBtn.innerText=
+"Submit Advertisement";
+
+return;
+
+}
+
+
+// safe text
+
+const safeText=
+escapeHTML(text);
+
+const formattedText=
+linkify(safeText);
+
+
+// image compression
+
+let imageData=null;
+
+if(imageFile){
+
+imageData=
+await compressImage(
+imageFile
+);
+
+}
+
+
+// send request
+
+const response=
+await fetch(
+"https://zpda-backend-1.onrender.com/ads",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:JSON.stringify({
+
+text:formattedText,
+
+image:imageData,
+
+duration:Number(duration),
+
+name:name,
+
+phone:phone,
+
+approvalCode:approvalCode,
+
+createdAt:
+new Date()
+
+})
+
+}
+
+);
+
+
+const data=
+await response.json();
+
+if(response.ok){
+
+alert(
+"✅ Advertisement submitted successfully and sent to admin."
+);
+
+adForm.reset();
+
+document
+.getElementById(
+"ussd-code"
+)
+.style.display=
+"none";
+
+window.location.href=
+"index.html";
+
+}else{
+
+alert(
+data.error ||
+"❌ Submission failed"
+);
+
+}
+
+}catch(error){
+
+console.log(error);
+
+alert(
+"❌ Server error: "+
+error
+);
+
+}
+
+submitBtn.disabled=false;
+
+submitBtn.innerText=
+"Submit Advertisement";
+
+}
+
+);
+
+</script>
 <footer>
 <p>&copy; Zimbabwean Poetry Digital Archive 2026</p>
 </footer>
